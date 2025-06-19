@@ -327,6 +327,23 @@ body {
   .hidden {
     display: none;
   }
+
+  /* to optimize images for mobile screens */ 
+  @media (max-width: 600px) {
+    .services-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .service-item img {
+      width: 60vw;  /* scales image width to 80% of the screen */
+    }
+  
+    .service-item h3 {
+      font-size: 1.2rem;
+    }
+  }
+  
   
   
   
