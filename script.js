@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         : '';
       const summary = coach.bio?.text || '';
       const instagramLink = coach.instagram
-      ? `<p><strong>Instagram:</strong> <a href="${coach.instagram}" target="_blank" rel="noopener noreferrer">${coach.name}</a></p>`
+      ? `<p><strong>Instagram:</strong> <a href="${coach.instagram}" target="_blank" rel="noopener noreferrer">${coach.name}'s Instagram</a></p>`
       : '';
       console.log(coach.instagram);
       modalContent.innerHTML = `
