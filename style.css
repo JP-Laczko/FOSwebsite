@@ -1,0 +1,332 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    background-color: #f5e1c6; 
+  }
+  
+  /* Menu Button */
+  .menu-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background-color: #0077cc;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1100;
+    border-radius: 5px;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 220px;
+    background-color: #abe1f6;
+    padding: 1.5rem;
+    border-right: 1px solid #160a0a;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar h2 {
+    margin-top: 40px;
+  }
+
+  .sidebar h3 {
+    margin-top: 10px;    
+  }
+  
+  /* Select/Clear All Buttons */
+  .day-buttons {
+    margin-bottom: 1rem;
+  }
+  
+  .day-buttons button {
+    margin-right: 8px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .day-buttons button:hover {
+    background-color: #005fa3;
+  }
+  
+  /* Checkbox styles */
+  .day-checkboxes-group label {
+    display: block;
+    margin: 0.4rem 0;
+    cursor: pointer;
+  }
+  
+  .day-checkboxes-group input[type="checkbox"] {
+    margin-right: 0.5rem;
+    transform: scale(1.2);
+  }
+  
+  /* Main content */
+  .main-content {
+    margin-left: 0; 
+    background-color: 
+    #f9e2d7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .hero-section {
+    position: relative;
+    height: 500px;  
+    width: 100vw;   
+    margin-top: 0;
+    min-height: 350px;   
+    background-image: url('Images/FOSimg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    display: flex;           /* use flexbox to center content */
+    flex-direction: column;
+    justify-content: center; 
+    padding: 0 2rem;        
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.6);
+  }  
+  
+  .hero-section h1 {
+    font-size: 3rem;
+    margin: 0;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+  }
+  
+  .hero-section p {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  }  
+  
+  /* Coach card layout */
+  #coach-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.8rem;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 2rem;
+  }
+  
+  .coach-card {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+  }
+  
+  .coach-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45); /* dark overlay */
+    z-index: 1;
+  }
+  
+  .card-overlay {
+    position: relative;
+    z-index: 2;
+    padding: 1rem;
+  }
+  
+  .card-overlay h3,
+  .card-overlay p {
+    margin: 0.4rem 0;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  }
+  
+  
+  .coach-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 12px rgba(0, 119, 204, 0.4);
+  }
+  
+  .coach-card h3 {
+    margin: 0.5rem 0;
+    color: #4dadf1;
+  }
+  
+  .coach-card p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+    color: white;
+    word-wrap: break-word;
+  }
+  
+  /* Responsive Sidebar */
+  @media (max-width: 768px) {
+    .sidebar {
+      transform: translateX(-100%);
+    }
+  
+    .sidebar.open {
+      transform: translateX(0);
+    }
+  }
+
+  .services-section {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    text-align: center;
+  }
+  
+  .services-section h2 {
+    font-size: 2rem;
+    color: #0077cc;
+    font-weight: 700;
+    margin-bottom: 2rem;
+  }
+  
+  .services-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .service-item {
+    flex: 1 1 calc(33.33% - 2rem); /* three items with spacing */
+    max-width: 300px;
+    text-align: center;
+    margin: 0 auto;
+  }
+  
+  .service-item img {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    display: block;
+  }
+  
+  
+  .info-section {
+    max-width: 700px;
+    margin: 2rem auto 4rem;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .info-block.pricing-contact {
+    background: #0077cc;
+    color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0, 119, 204, 0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .info-block.pricing-contact h2 {
+    margin-top: 0;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  }
+  
+  .info-block.pricing-contact p {
+    font-size: 1.1rem;
+    margin: 0.6rem 0;
+  }
+  
+  .info-block.pricing-contact a {
+    color: #ffe082; /* warm highlight */
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .info-block.pricing-contact a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive */
+  
+  @media (max-width: 700px) {
+    .info-section {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    z-index: 2000;
+  }
+  
+  .modal h2 {
+    margin-top: 0;
+    color: #0077cc;
+  }
+  
+  .modal p {
+    margin: 0.5rem 0;
+    color: #333;
+  }
+  
+  .modal .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s ease;
+  }
+  
+  .modal .close-btn:hover {
+    color: #333;
+  }
+
+  .hidden {
+    display: none;
+  }
+  
+  
+  

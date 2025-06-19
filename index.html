@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Coach Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button class="menu-btn">☰</button>
+
+  <div class="sidebar">
+    <h2>What days are you available?</h2>
+    <h3>We'll filter our coaches.</h3>
+
+    <div class="day-buttons">
+      <button id="select-all">Select All</button>
+      <button id="clear-all">Clear All</button>
+    </div>
+
+    <div id="day-checkboxes" class="day-checkboxes-group">
+      <label><input type="checkbox" value="Monday"> Monday</label><br>
+      <label><input type="checkbox" value="Tuesday"> Tuesday</label><br>
+      <label><input type="checkbox" value="Wednesday"> Wednesday</label><br>
+      <label><input type="checkbox" value="Thursday"> Thursday</label><br>
+      <label><input type="checkbox" value="Friday"> Friday</label><br>
+      <label><input type="checkbox" value="Saturday"> Saturday</label><br>
+      <label><input type="checkbox" value="Sunday"> Sunday</label><br>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <header class="hero-section">
+        <h1>FOS Baseball Academy</h1>
+        <p>Private baseball lessons from current and former West Morris varsity players – quality instruction at an affordable price for youth athletes.</p>
+      </header>      
+
+    <section id="coach-container">
+    </section>
+
+    <section class="services-section">
+        <h2>Our Services</h2>
+        <div class="services-container">
+          <div class="service-item">
+            <img src="Images/hitting.png" alt="Hitting Lessons" />
+            <h3>Hitting Lessons</h3>
+          </div>
+          <div class="service-item">
+            <img src="Images/pitching.png" alt="Pitching Lessons" />
+            <h3>Pitching Lessons</h3>
+          </div>
+          <div class="service-item">
+            <img src="Images/fielding.png" alt="Fielding Lessons" />
+            <h3>Fielding Lessons</h3>
+          </div>
+        </div>
+      </section>
+      
+
+    <section class="info-section">    
+        <div class="info-block pricing-contact">
+          <h2>Our Pricing</h2>
+          <p><strong>$59.99/hr</strong> <em>(Competitors ~ $140/hr)</em></p>
+          <p><strong>$89.99/hr</strong> for 2 kids at once</p>
+          <hr />
+          <p><strong>Phone:</strong> 908-645-4602</p>
+          <p><strong>Email:</strong> <a href="mailto:FosBaseballAcademy@gmail.com">FosBaseballAcademy@gmail.com</a></p>
+        </div>
+      </section>
+      
+
+  </main>
+
+  <div id="bio-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2 id="bio-name"></h2>
+      <p id="bio-position"></p>
+      <p id="bio-school"></p>
+      <p id="bio-achievement"></p>
+      <hr>
+      <p><strong>Hitting:</strong> <span id="bio-hitting"></span></p>
+      <p><strong>Pitching:</strong> <span id="bio-pitching"></span></p>
+      <p id="bio-text"></p>
+    </div>
+  </div>
+  
+
+  <script src="coaches.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
