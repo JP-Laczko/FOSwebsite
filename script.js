@@ -1,3 +1,5 @@
+let coaches = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     const sidebar = document.querySelector('.sidebar');
     const menuBtn = document.querySelector('.menu-btn');
@@ -20,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         container.innerHTML = "";
   
-        // If no filter days selected, show all coaches
+        // If no filter, show all coaches
         const filtered = selectedDays.length === 0
           ? coaches
           : coaches.filter(coach =>
@@ -127,7 +129,14 @@ document.addEventListener("DOMContentLoaded", () => {
       renderCoaches(); // no filter, show all
     });
   
-    // Initial render of all coaches on page load
-    renderCoaches();
+    // Fetch data from gist then render when loaded
+  fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+    coaches = data;
+    renderCoaches();  
+  })
+  .catch(err => console.error("Error fetching coaches:", err));
   });
   
