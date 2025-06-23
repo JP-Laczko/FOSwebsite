@@ -44,11 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
               <p><strong>Position:</strong> ${coach.position}</p>
               <p><strong>School:</strong> ${coach.school}</p>
               <p><strong>Achievement:</strong> ${coach.achievement}</p>
+              <a class="schedule-btn" href="schedule.html?coach=${encodeURIComponent(coach.name)}">Schedule Lesson</a>
             </div>
           `;
-  
+
           // Click to open bio modal
-          card.addEventListener('click', () => showBioModal(coach));
+          card.addEventListener('click', (e) => showBioModal(coach, e));
   
           container.appendChild(card);
         });
@@ -57,8 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   
-    // Show bio modal, conditionally show pitching if exists
-    function showBioModal(coach) {
+    // Show bio modal, conditionally show text if data exists
+    function showBioModal(coach, e) {
+      if (e.target.closest(".schedule-btn")) return;
+
       const pitching = coach.bio?.performance?.pitching
         ? `<p><strong>Pitching:</strong> ${coach.bio.performance.pitching}</p>`
         : '';
@@ -80,6 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
   
       modal.style.display = 'block';
+
+      // timer to allow the modal to popup without closing so I can add functionality to make it close when clicked anywhere outside of modal
+      setTimeout(() => {
+        // Wait 10 ms then add this to check in the action event listener to close the modal
+        modal.classList.add("ready");
+      }, 10);
   
       // Add event listener for close button (new content, so add here)
       modalContent.querySelector('.close-btn').addEventListener('click', closeModal);
@@ -87,16 +96,17 @@ document.addEventListener("DOMContentLoaded", () => {
   
     // Close modal function
     function closeModal() {
+      modal.classList.remove("ready");
       modal.style.display = 'none';
     }
-  
-    // Hide modal if user clicks outside modal content
-    window.addEventListener('click', (event) => {
-      if (event.target === modal) {
+    
+    // close the modal if clicking anywhere outside of it
+    document.addEventListener('click', (e) => {
+      if (modal.classList.contains("ready") && !modal.querySelector('.modal-content').contains(e.target)) {
         closeModal();
-      }
+      } 
     });
-  
+
     // Checkbox filtering
     checkboxGroup.addEventListener("change", () => {
       const selectedDays = Array.from(

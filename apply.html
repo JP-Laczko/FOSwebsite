@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FOS Baseball Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script>
+  (function(){
+    emailjs.init("PCs6Fo02BKuOKWQNd");
+  })();
+</script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><a href="index.html">FOS Sports Academy</a></div>
+    <ul class="nav-links">
+      <li><a href="index.html">Find a Coach</a></li>
+      <li><a href="schedule.html">Schedule a Session</a></li>
+      <li class="active"><a href="apply.html">Become a Coach</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <section class="form-section">
+      <h2>Apply to Become a Coach</h2>
+      <p>Fill out the form below and we'll get in touch with you!</p>
+  
+      <form id="apply-form">
+        <label for="name">Full Name:</label>
+        <input type="text" name="user_name" id="user_name" required />
+  
+        <label for="email">Email:</label>
+        <input type="email" name="user_email" id="user_email" required />
+  
+        <label for="school">School:</label>
+        <input type="text" name="school" id="school" required />
+  
+        <label for="year">Graduation Year:</label>
+        <input type="text" name="year" id="year" required />
+  
+        <label for="experience">Baseball Experience:</label>
+        <textarea name="experience" id="experience" required></textarea>
+  
+        <label for="message">Tell Us About Yourself:</label>
+        <textarea name="message" id="message" required></textarea>
+  
+        <button type="submit">Submit Application</button>
+      </form>
+      
+      <p id="confirmation-message" class="hidden">Your application has been sent!</p>
+    </section>
+  </main>
+  
+  <script src="apply.js"></script>
+  </body>
+  </html>
+  
