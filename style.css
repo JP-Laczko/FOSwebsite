@@ -89,22 +89,59 @@ body {
   .sidebar h3 {
     margin-top: 10px;    
   }
-  
-  /* Select/Clear All Buttons */
-  .day-buttons {
-    margin-bottom: 1rem;
+
+  /* Filter controls for time/day */
+  .filter-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding-top: 1rem;
   }
   
-  .day-buttons button {
-    margin-right: 8px;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.85rem;
-    background-color: #0077cc;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  .filter-controls select,
+  .filter-controls input[type="range"] {
+    width: 80%;
+    max-width: 200px;
+    padding: 0.4rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
   }
+  
+  #time-display {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #003366;
+  }
+  
+  #time-label {
+    min-width: 120px;
+  }
+
+/* Schedule Table inside Modal */
+.schedule-table {
+  width: 100%;
+  margin-top: 1rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.schedule-table th {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.schedule-table td {
+  background-color: #fff;
+}
   
   .day-buttons button:hover {
     background-color: #005fa3;
@@ -115,11 +152,6 @@ body {
     display: block;
     margin: 0.4rem 0;
     cursor: pointer;
-  }
-  
-  .day-checkboxes-group input[type="checkbox"] {
-    margin-right: 0.5rem;
-    transform: scale(1.2);
   }
   
   /* Main content */
@@ -186,65 +218,69 @@ body {
     justify-content: center;
     color: white;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: inset 0 0 0 300px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease;
   }
   
+  /* Coach card overlay */
   .coach-card::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45); /* dark overlay */
     z-index: 1;
   }
-  
-  .card-overlay {
-    position: relative;
-    z-index: 2;
-    padding: 1rem;
-    padding-top: 5rem;
-  }
-  
-  .card-overlay h3,
-  .card-overlay p {
-    margin: 0.4rem 0;
-    color: white;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
-  }
-  
-  
-  .coach-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 0 12px rgba(0, 119, 204, 0.4);
-  }
-  
-  .coach-card h3 {
-    margin: 0.5rem 0;
-    color: #4dadf1;
-  }
-  
-  .coach-card p {
-    margin: 0.3rem 0;
-    font-size: 0.9rem;
-    color: white;
-    word-wrap: break-word;
-  }
 
-  .schedule-btn {
-    display: inline-block;
-    margin-top: 4rem;
-    padding: 0.5rem 1rem;
-    background-color: #0077cc;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  }
-  
-  .schedule-btn:hover {
-    background-color: #005fa3;
-  }  
+.card-overlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+.card-info {
+  flex-grow: 1;
+}
+.card-overlay h3 {
+  color: #4dadf1;
+  font-weight: bold;
+  margin: 0.5rem 4;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  margin-top: 3rem;
+}
+.card-overlay p {
+  color: white;
+  font-weight: 350;
+  margin: 0.3rem 0;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+}
+
+/* Schedule button */
+.schedule-btn {
+  background-color: #0077cc;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+  text-decoration: none;
+  align-self: center;
+  margin-bottom: 1rem;
+}
+
+.schedule-btn:hover {
+  background-color: #005fa3;
+}
+
+.no-results {
+  grid-column: 1 / -1;      /* span full width of the grid */
+  text-align: center;       /* center text */
+  font-size: 1.2rem;        /* slightly larger for emphasis */
+  font-weight: 500;         /* medium weight */
+  color: #555;              /* a softer gray */
+  margin: 2rem auto;        /* vertical spacing above/below */
+}
   
   /* Responsive Sidebar */
   @media (max-width: 768px) {
@@ -511,6 +547,44 @@ body {
     margin-bottom: 2rem; 
   }
   
+  .login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  
+  input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  button {
+    background-color: #0077cc;
+    color: white;
+    padding: 0.7rem 1.4rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #005fa3;
+  }
+  
+  #calendar {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+  }
   
   
   

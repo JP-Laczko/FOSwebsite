@@ -1,0 +1,27 @@
+<!-- client/admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login - FOS Scheduler</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Admin Login</h2>
+    <form id="admin-login-form">
+      <input type="password" id="admin-password" placeholder="Enter admin password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p id="login-error" class="hidden" style="color:red;">Invalid password. Try again.</p>
+  </div>
+
+  <div id="admin-dashboard" class="hidden">
+    <h2>Admin Dashboard</h2>
+    <div id="calendar"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
