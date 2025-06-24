@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("schedule-form");
-  const confirmation = document.getElementById("confirmation-message");
-
+  
   // Using a coach select to prevent user error for sending emails to coaches
   const coachSelect = document.getElementById("coach");
   const coachParam = new URLSearchParams(window.location.search).get("coach");
@@ -61,8 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const formattedTime = rawDate.toLocaleTimeString([], {
       hour: '2-digit', minute: '2-digit'
     });
-    
-    //console.log(coach_email);
   
     // Send email
     emailjs.send("service_xo1n5fb", "template_qhdcutp", {

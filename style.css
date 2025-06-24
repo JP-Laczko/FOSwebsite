@@ -1,5 +1,7 @@
 body {
     margin: 0;
+    padding: 0;
+    overflow-x: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333;
     background-color: #f9e2d7; 
@@ -15,6 +17,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 999;
+    width: 95vw;
   }
   
   .navbar .logo a {
@@ -46,7 +49,48 @@ body {
     color: #ffcc00;
   }
   
-
+  .hero-sports {
+    position: relative;
+    height: 500px;  
+    width: 100vw;   
+    margin-top: 0;
+    min-height: 350px;   
+    background-image: url('Images/FOSimg.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    display: flex;           /* use flexbox to center content */
+    flex-direction: column;
+    justify-content: center; 
+    padding: 1 2rem;        
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.6);
+  }
+  
+  .hero-sports h1 {
+    font-size: 3rem;
+    margin: 0;
+    text-shadow: 1px 1px 5px rgba(19, 10, 197, 2);
+    color: white;
+  }
+  
+  .hero-sports p {
+    font-size: 1.3rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  }
+  
+  .hero-sports select {
+    font-size: 1.1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 250px;
+    margin-top: 1rem;
+  }
+  
   /* Menu Button */
   .menu-btn {
     position: fixed;
@@ -167,69 +211,161 @@ body {
   
   .hero-section {
     position: relative;
-    height: 500px;  
+    min-height: 350px
+    padding: 6vh, 2rem;  
     width: 100vw;   
     margin-top: 0;
     min-height: 350px;   
-    background-image: url('Images/FOSimg.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
+    background: linear-gradient(to right, #f9e2d7, #8cd8f6);
+    padding: 2rem 2rem;
+    text-align: center;
     background-position: center;
     color: white;
-    text-align: center;
     display: flex;           /* use flexbox to center content */
     flex-direction: column;
     justify-content: center; 
-    padding: 0 2rem;        
     box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.6);
   }  
   
-  .hero-section h1 {
-    font-size: 3rem;
+  .hero-section h1, h2 {
+    text-shadow: 1px 1px 1px rgba(19, 10, 197, 4);
+    color: white;
+    font-size: 1.5rem;
     margin: 0;
-    text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
-  }
+    }
   
   .hero-section p {
-    font-size: 1.2rem;
-    margin-top: 0.5rem;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    font-size: 1.1rem;
+    padding: 1rem;
+    text-shadow: 1px 1px 4px rgba(10, 49, 205, 0.6);
   }  
+
+  .cta-testimonials-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    flex-wrap: wrap; /* makes it responsive */
+  }
   
-  /* Coach card layout */
+  .cta, .testimonials {
+    flex: 1 1 45%; /* grow/shrink with basis */
+    min-width: 300px;
+  }
+  
+  .cta h2, .testimonials h2 {
+    margin-bottom: 1rem;
+    color: #003366;
+    font-weight: 700;
+    font-size: 1.8rem;
+  }
+  
+  .cta p {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .btn-primary {
+    background-color: #003366;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: #00509e;
+  }
+  
+  .testimonials blockquote {
+    background-color: #f5f8fb;
+    border-left: 5px solid #003366;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    color: #555;
+    border-radius: 4px;
+  }
+  
+  .testimonials footer {
+    margin-top: 0.5rem;
+    font-weight: 600;
+    color: #003366;
+    font-style: normal;
+    font-size: 0.9rem;
+  } 
+  
+  .coach-wrapper {
+    max-width: 1200px;      /* max width of your grid */
+    margin: 0 auto;         /* center wrapper horizontally */
+    padding: 0 1.5rem;      /* padding so content doesn’t touch edges */
+    box-sizing: border-box;
+    justify-content: center;
+  }
+  
+  /* Grid container for coach cards */
   #coach-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.8rem;
-    width: 100%;
-    max-width: 1200px;
-    margin-top: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1rem; 
+    box-sizing: border-box;
   }
   
-  .coach-card {
-    position: relative;
-    background-size: cover;
-    background-position: center;
-    height: 300px;
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-    box-shadow: inset 0 0 0 300px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease;
-  }
-  
-  /* Coach card overlay */
-  .coach-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
+#coach-section {
+  width: 100%;
+  display: block; 
+  padding: 0;
+  transition: padding 0.3s ease;
+  box-sizing: border-box;
+  justify-content: center;
   }
 
+  /* Adds padding for coach cards */ 
+  #coach-section.has-padding {
+    padding: 1rem 0; /* normal padding */
+  }
+  
+
+/* Individual coach card */
+.coach-card {
+  position: relative;              
+  background-size: cover;
+  background-position: center;
+  height: 400px;
+  padding: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  box-shadow: inset 0 0 0 300px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;          /* ensure padding doesn’t overflow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Coach card overlay */
+.coach-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Overlay content */
 .card-overlay {
   position: relative;
   z-index: 2;
@@ -240,21 +376,38 @@ body {
   padding: 1rem;
   box-sizing: border-box;
 }
+
+/* Text styling */
 .card-info {
   flex-grow: 1;
 }
 .card-overlay h3 {
-  color: #4dadf1;
-  font-weight: bold;
-  margin: 0.5rem 4;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  color: #1776ba;
+  font-size: 1.2rem;
+  font-weight: 800;
   margin-top: 3rem;
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff,
+     1px  0   0 #fff,
+    -1px  0   0 #fff,
+     0    1px 0 #fff,
+     0   -1px 0 #fff,
+     1px  1px 4px rgba(0, 0, 0, 0.6);
 }
 .card-overlay p {
   color: white;
   font-weight: 350;
   margin: 0.3rem 0;
   text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+}
+
+.coach-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
 }
 
 /* Schedule button */
@@ -506,10 +659,6 @@ body {
     text-align: center;
     color: green;
     font-weight: bold;
-  }
-  
-  .hidden {
-    display: none;
   }
   
  .contact-info {

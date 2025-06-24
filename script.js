@@ -1,6 +1,7 @@
 // --- FILE: script.js ---
 
 let coaches = [];
+let selectedSport = ""; // tracks currently selected sport
 
 document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.querySelector(".sidebar");
@@ -12,6 +13,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const dayDropdown = document.getElementById("day-select");
   const timeSlider = document.getElementById("time-slider");
   const timeDisplay = document.getElementById("time-display");
+
+  document.getElementById("sport-select").addEventListener("change", (e) => {
+    filterAndRender();
+  });
+
+    const sportSelect = document.getElementById("sport-select");
+
+    sportSelect.addEventListener("change", (e) => {
+      selectedSport = e.target.value;
+
+    if (selectedSport) {
+      const sportCoaches = coaches.filter(c => c.sport === selectedSport && c.available === "yes");
+      renderCoaches(sportCoaches);
+      showSportSections();
+    } else {
+      container.innerHTML = ""; // hide coach cards
+      hideSportSections();
+    }
+  });
 
   // Format hour (24→12h with AM/PM)
   function formatTime(hour) {
@@ -35,23 +55,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Main filter + render
   function filterAndRender() {
-    const selectedDay = dayDropdown.value;    // "" means All Days
+    const selectedDay = dayDropdown.value;
     const selectedTime = parseInt(timeSlider.value, 10);
-
-    // 1) Only coaches marked available
-    let filtered = coaches.filter(c => c.available === "yes");
-
-    // 2) If a specific day is chosen, apply schedule filter
-    if (selectedDay) {
-      filtered = filtered.filter(c => {
+    const selectedSport = document.getElementById("sport-select").value;
+    if (selectedSport === "") {
+      hideSportSections();
+      return;
+    };
+  
+    let filtered = coaches.filter(c => {
+      const isAvailable = c.available === "yes";
+      const matchesSport = !selectedSport || c.sport === selectedSport;
+  
+      let matchesTime = true;
+      if (selectedDay) {
         const slot = c.schedule?.[selectedDay];
-        return slot &&
-               selectedTime >= slot.start &&
-               (selectedTime + 1) <= slot.end;
-      });
-    }
-
-    // 3) Render or show no-results
+        matchesTime = slot && selectedTime >= slot.start && (selectedTime + 1) <= slot.end;
+      }
+  
+      return isAvailable && matchesSport && matchesTime;
+    });
+  
     if (filtered.length === 0) {
       container.innerHTML = `
         <p class="no-results">
@@ -60,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       renderCoaches(filtered);
     }
-  }
+  }  
 
   // Build the coach cards
   function renderCoaches(list) {
@@ -95,6 +119,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // hide and show coach cards for different sports
+  function hideSportSections() {
+    document.getElementById("coach-section")?.classList.add("hidden");
+    document.getElementById("services-section")?.classList.add("hidden");
+    document.getElementById("pricing-contact")?.classList.add("hidden");
+  
+    const coachSection = document.getElementById('coach-section');
+    coachSection?.classList.remove('has-padding'); // remove padding when hidden
+  }
+  
+  function showSportSections() {
+    document.getElementById("coach-section")?.classList.remove("hidden");
+    document.getElementById("services-section")?.classList.remove("hidden");
+    document.getElementById("pricing-contact")?.classList.remove("hidden");
+  
+    const coachSection = document.getElementById('coach-section');
+    coachSection?.classList.add('has-padding'); // add padding when shown
+  }
+  
   // Show coach bio + schedule in a modal
   function showBioModal(coach, e) {
     if (e.target.closest(".schedule-btn")) return;
@@ -104,17 +147,29 @@ document.addEventListener("DOMContentLoaded", () => {
         `<tr><td>${day}</td><td>${formatTime(slot.start)} - ${formatTime(slot.end)}</td></tr>`
     ).join("");
 
-    modalContent.innerHTML = `
+    
+
+        let html = `
       <button class="close-btn">&times;</button>
       <h2>${coach.name}</h2>
-      <p><strong>Pitching:</strong> ${coach.bio.performance.pitching || "N/A"}</p>
-      <p><strong>Hitting:</strong> ${coach.bio.performance.hitting || "N/A"}</p>
-      <p>${coach.bio.text || ""}</p>
+    `;
+
+    if (coach.bio?.performance?.hitting) {
+      html += `<p><strong>Hitting:</strong> ${coach.bio.performance.hitting}</p>`;
+    }
+    if (coach.bio?.performance?.pitching) {
+      html += `<p><strong>Pitching:</strong> ${coach.bio.performance.pitching}</p>`;
+    }
+
+    html += `
+      <p>${coach.bio?.text || ""}</p>
       ${coach.instagram ? `<p><a href="${coach.instagram}" target="_blank">${coach.name}'s Instagram</a></p>` : ""}
       <hr/>
       <h3>Availability</h3>
       <table class="schedule-table">${rows}</table>
     `;
+
+    modalContent.innerHTML = html;
 
     // Show modal
     modal.style.display = "block";

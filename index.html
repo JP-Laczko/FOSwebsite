@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  
   <nav class="navbar">
     <div class="logo"><a href="index.html">FOS Sports Academy</a></div>
     <ul class="nav-links">
@@ -41,28 +42,60 @@
   </div>  
 
   <main class="main-content">
+
+    <section class="hero-sports">
+      <div class="hero-content">
+        <h1>Welcome to FOS Sports Academy</h1>
+        <p>Train with student-athletes at elite levels for a fraction of the cost. Empowering the next generation of athletes through personalized coaching.</p>
+        <label for="sport-select">Choose Your Sport:</label>
+        <select id="sport-select">
+          <option value="">-- Select a Sport --</option>
+          <option value="baseball">Baseball</option>
+          <option value="girlsSoccer">Girls Soccer</option>
+          <option value="football">Football</option>
+          <option value="boysLax">Boys Lacrosse</option>
+        </select>
+      </div>
+    </section> 
+
+  <div class="coach-wrapper"></div>
+    <div id="coach-section" class="hidden">
+      <div id="coach-container"></div>
+    </div>
+  </div>
+
+    <div id="services-section" class="hidden">
+      <!-- sport-specific services (3 cards) -->
+    </div>
+    
+    <div id="pricing-contact" class="hidden">
+      <!-- reused pricing block -->
+    </div>  
+    
     <header class="hero-section">
-      <h1>FOS Sports Academy</h1>
-      <p>Private lessons from current and former West Morris varsity players – quality instruction at an affordable price for youth athletes.</p>
+      <h1>Private Lessons with Elite Athletes</h1>
+      <p>Receive personalized instruction from current and former West Morris varsity players, delivering expert coaching tailored to youth athletes at an accessible price point. Our dedicated coaches focus on skill development, performance improvement, and fostering a passion for the game, ensuring each athlete reaches their full potential.</p>
+      <h2>Why Choose Student-Athlete Coaching?</h2>
+      <p>Engaging with student-athletes as coaches provides unique advantages that extend beyond technical skill development. Our coaches serve as relatable role models who intimately understand the balance of academics, athletics, and personal growth. They are adept at fostering discipline, resilience, and a growth mindset, empowering young athletes to thrive both on and off the field. By training with individuals who have successfully competed at the varsity level, youth athletes gain invaluable insights into effective practice habits, mental preparation, and goal setting. This mentorship cultivates a supportive environment that not only elevates athletic performance but also encourages lifelong lessons in teamwork, leadership, and perseverance.</p>
     </header>
 
-    <section id="coach-container"></section>
-
-    <section class="services-section">
-      <h2>Our Services</h2>
-      <div class="services-container">
-        <div class="service-item">
-          <img src="Images/Hitting.jpeg" alt="Hitting Lessons" />
-          <h3>Hitting Lessons</h3>
-        </div>
-        <div class="service-item">
-          <img src="Images/Pitching.jpeg" alt="Pitching Lessons" />
-          <h3>Pitching Lessons</h3>
-        </div>
-        <div class="service-item">
-          <img src="Images/Fielding.jpeg" alt="Fielding Lessons" />
-          <h3>Fielding Lessons</h3>
-        </div>
+    <section class="cta-testimonials-container">
+      <div class="cta">
+        <h2>Get Started Today</h2>
+        <p>Ready to elevate your game with personalized coaching from proven varsity athletes? Join FOS Sports Academy and take the next step in your athletic journey. Our experienced coaches are committed to helping every athlete reach their highest potential through high-level training plans and mentorship.</p>
+        <a href="#contact" class="btn-primary">Schedule Your Lesson</a>
+      </div>
+    
+      <div class="testimonials">
+        <h2>What Our Athletes Say</h2>
+        <blockquote>
+          <p>"Training with FOS Sports Academy has transformed my skills and confidence on the field. The coaches truly understand what it takes to succeed."</p>
+          <footer>— Sarah M., Youth Soccer Player</footer>
+        </blockquote>
+        <blockquote>
+          <p>"The personalized approach and mentorship helped me improve faster than I ever thought possible. Highly recommend to any young athlete."</p>
+          <footer>— Jason K., Lacrosse Athlete</footer>
+        </blockquote>
       </div>
     </section>
 
@@ -81,7 +114,6 @@
   <div id="bio-modal" class="modal hidden">
     <div class="modal-content">
       <span class="close-btn">&times;</span>
-      <!-- Filled dynamically -->
     </div>
   </div>
 
