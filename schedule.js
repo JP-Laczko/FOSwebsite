@@ -1,3 +1,10 @@
+const sportNames = {
+  baseball: "Baseball",
+  girlsSoccer: "Girls Soccer",
+  football: "Football",
+  boysLax: "Boys Lacrosse"
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("schedule-form");
   
@@ -19,7 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
       sortedCoaches.forEach(coach => {
         const option = document.createElement("option");
         option.value = coach.name;
-        option.textContent = `${coach.name} (${coach.sport || "Coach"})`;
+        const prettySport = sportNames[coach.sport] || "No Sport";
+        option.textContent = `${coach.name} (${prettySport})`;
         if (coachParam && coachParam === coach.name) {
           option.selected = true;
         }
@@ -62,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
     // Send email
-    emailjs.send("service_xo1n5fb", "template_qhdcutp", {
+    emailjs.send("service_b2jlk03", "template_wfpkvcf", {
       user_name: name,
       user_email: email,
       coach: coach,

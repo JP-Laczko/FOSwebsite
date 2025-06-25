@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("apply-form");
-  const confirmation = document.getElementById("confirmation-message");
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -13,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const experience = document.getElementById("experience").value;
         const message = document.getElementById("message").value;
 
-        emailjs.send("service_xo1n5fb", "template_hcljljr", {
+        emailjs.send("service_b2jlk03", "template_r2jjjcx", {
             user_name: name,
             user_email: email,
             school: school,

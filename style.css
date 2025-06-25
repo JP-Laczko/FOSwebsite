@@ -1,11 +1,13 @@
 body {
     margin: 0;
     padding: 0;
+    min-height: 100vh;
     overflow-x: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333;
-    background-color: #f9e2d7; 
-  }
+    background: linear-gradient(to right, #ffffff, #92d0fc); 
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.2);
+   }
   
   .navbar {
     background-color: #003366;
@@ -201,8 +203,8 @@ body {
   /* Main content */
   .main-content {
     margin-left: 0; 
-    background-color: 
-    #f9e2d7;
+    background: linear-gradient(to right, #ffffff, #92d0fc); 
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -211,32 +213,30 @@ body {
   
   .hero-section {
     position: relative;
-    min-height: 350px
+    min-height: 400px;
     padding: 6vh, 2rem;  
     width: 100vw;   
     margin-top: 0;
-    min-height: 350px;   
     background: linear-gradient(to right, #f9e2d7, #8cd8f6);
-    padding: 2rem 2rem;
     text-align: center;
     background-position: center;
     color: white;
     display: flex;           /* use flexbox to center content */
     flex-direction: column;
     justify-content: center; 
-    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.5);
   }  
   
   .hero-section h1, h2 {
     text-shadow: 1px 1px 1px rgba(19, 10, 197, 4);
     color: white;
     font-size: 1.5rem;
-    margin: 0;
+    margin-top: 1rem;
     }
   
   .hero-section p {
     font-size: 1.1rem;
-    padding: 1rem;
+    padding: .2rem;
     text-shadow: 1px 1px 4px rgba(10, 49, 205, 0.6);
   }  
 
@@ -248,6 +248,7 @@ body {
     max-width: 1100px;
     margin: 0 auto;
     flex-wrap: wrap; /* makes it responsive */
+    background-color: #f9e2d7; 
   }
   
   .cta, .testimonials {
@@ -343,7 +344,7 @@ body {
   background-size: cover;
   background-position: center;
   height: 400px;
-  padding: 1rem;
+  padding: rem;
   border-radius: 12px;
   overflow: hidden;
   display: flex;
@@ -422,17 +423,18 @@ body {
   margin-bottom: 1rem;
 }
 
+
 .schedule-btn:hover {
   background-color: #005fa3;
 }
 
 .no-results {
-  grid-column: 1 / -1;      /* span full width of the grid */
-  text-align: center;       /* center text */
-  font-size: 1.2rem;        /* slightly larger for emphasis */
-  font-weight: 500;         /* medium weight */
-  color: #555;              /* a softer gray */
-  margin: 2rem auto;        /* vertical spacing above/below */
+  display: block;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #555;
+  margin: 2rem auto;
 }
   
   /* Responsive Sidebar */
@@ -447,24 +449,38 @@ body {
   }
 
   .services-section {
-    max-width: 1200px;
-    margin: 3rem auto;
+    width: 100%;
+    margin: 1rem auto;
     padding: 0 2rem;
     text-align: center;
+    box-sizing: border-box;
   }
   
   .services-section h2 {
+    display: block;
+    width: 100%;
     font-size: 2rem;
-    color: #0077cc;
+    color: #1776ba;
+    text-shadow:
+      -1px -1px 0 #fff,
+      1px -1px 0 #fff,
+      -1px  1px 0 #fff,
+      1px  1px 0 #fff,
+      1px  0   0 #fff,
+      -1px  0   0 #fff,
+      0    1px 0 #fff,
+      0   -1px 0 #fff,
+      1px  1px 6px rgba(0, 0, 0, 1);
     font-weight: 700;
-    margin-bottom: 2rem;
+    text-align: center;
   }
   
   .services-container {
     display: flex;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 1rem;
     flex-wrap: wrap;
+    margin-right: 2rem;
   }
   
   .service-item {
@@ -472,15 +488,30 @@ body {
     max-width: 300px;
     text-align: center;
     margin: 0 auto;
+    color: #1776ba;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-top: 1rem;
+    text-shadow:
+      -1px -1px 0 #fff,
+      1px -1px 0 #fff,
+      -1px  1px 0 #fff,
+      1px  1px 0 #fff,
+      1px  0   0 #fff,
+      -1px  0   0 #fff,
+      0    1px 0 #fff,
+      0   -1px 0 #fff,
+      1px  1px 6px rgba(0, 0, 0, 1);
   }
   
   .service-item img {
     width: 100%;
+    margin-left: 1rem;
+    margin-right: 1rem;
     height: 200px;
     border-radius: 8px;
     display: block;
   }
-  
   
   .info-section {
     max-width: 700px;
@@ -537,7 +568,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #ffffff;
+    background: linear-gradient(to right, #ffd4bf, #a8e3fb);
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);

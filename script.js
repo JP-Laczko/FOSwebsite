@@ -1,7 +1,28 @@
-// --- FILE: script.js ---
-
 let coaches = [];
 let selectedSport = ""; // tracks currently selected sport
+
+const sportServices = {
+  baseball: [
+    { title: "Swing Mechanics", image: "Images/Hitting.jpeg" },
+    { title: "Pitching Mechanics", image: "Images/Pitching.jpeg" },
+    { title: "Fielding Drills", image: "Images/Fielding.jpeg" },
+  ],
+  football: [
+    { title: "Throwing Mechanics", image: "Images/FBThrowing.jpeg" },
+    { title: "Receiving Drills", image: "Images/FBCatching.jpeg" },
+    { title: "Defensive Drills", image: "Images/FBDrills.jpeg" },
+  ],
+  girlsSoccer: [
+    { title: "Footwork", image: "Images/GSFootwork.jpeg" },
+    { title: "Shooting Drills", image: "Images/GSShooting.jpeg" },
+    { title: "Defensive Positioning", image: "Images/GSDefensive.jpeg" },
+  ],
+  boysLax: [
+    { title: "Stick Handling", image: "Images/BLStick.jpeg" },
+    { title: "Shooting Drills", image: "Images/BLShooting.jpeg" },
+    { title: "Defensive Strategies", image: "Images/BLDefensive.jpeg" },
+  ]
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.querySelector(".sidebar");
@@ -24,8 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
       selectedSport = e.target.value;
 
     if (selectedSport) {
-      const sportCoaches = coaches.filter(c => c.sport === selectedSport && c.available === "yes");
-      renderCoaches(sportCoaches);
+      filterAndRender();
+      renderServices(selectedSport);
       showSportSections();
     } else {
       container.innerHTML = ""; // hide coach cards
@@ -75,12 +96,16 @@ document.addEventListener("DOMContentLoaded", () => {
   
       return isAvailable && matchesSport && matchesTime;
     });
-  
+
     if (filtered.length === 0) {
-      container.innerHTML = `
-        <p class="no-results">
-          No coaches are available at this time. Please try a different time or day.
-        </p>`;
+      container.innerHTML = ""; 
+      const p = document.createElement('p');
+      p.className = 'no-results';
+      p.innerHTML = `
+        <strong>No coaches available at this time.</strong><br>
+      `;
+      container.appendChild(p);
+      console.log('No results message appended');
     } else {
       renderCoaches(filtered);
     }
@@ -119,9 +144,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Render service section with the 3 images and text for the different sports
+  function renderServices(sport) {
+    const serviceList = sportServices[sport] || [];
+    const container = document.getElementById("services-container");
+    container.innerHTML = "";
+  
+    serviceList.forEach(service => {
+      const div = document.createElement("div");
+      div.className = "service-item";
+      div.innerHTML = `
+        <img src="${service.image}" alt="${service.title}" />
+        <h3>${service.title}</h3>
+      `;
+      container.appendChild(div);
+    });
+  }
+
   // hide and show coach cards for different sports
   function hideSportSections() {
-    document.getElementById("coach-section")?.classList.add("hidden");
     document.getElementById("services-section")?.classList.add("hidden");
     document.getElementById("pricing-contact")?.classList.add("hidden");
   
@@ -130,7 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   
   function showSportSections() {
-    document.getElementById("coach-section")?.classList.remove("hidden");
     document.getElementById("services-section")?.classList.remove("hidden");
     document.getElementById("pricing-contact")?.classList.remove("hidden");
   
@@ -146,8 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ([day, slot]) =>
         `<tr><td>${day}</td><td>${formatTime(slot.start)} - ${formatTime(slot.end)}</td></tr>`
     ).join("");
-
-    
 
         let html = `
       <button class="close-btn">&times;</button>
