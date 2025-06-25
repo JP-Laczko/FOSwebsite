@@ -272,17 +272,26 @@ body {
   
   .btn-primary {
     background-color: #003366;
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    text-decoration: none;
-    border-radius: 4px;
+    color: white;
+    padding: 0 8px;              
+    border-radius: 6px;
     font-weight: 600;
-    display: inline-block;
+    font-size: 1rem;
+    line-height: 20px;            
+    box-sizing: border-box;
+    width: auto;
+    text-decoration: none;
+    align-self: center;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: background-color 0.3s ease;
   }
   
   .btn-primary:hover {
-    background-color: #00509e;
+    background-color: #258cf4;
   }
   
   .testimonials blockquote {
