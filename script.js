@@ -126,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <p><strong>Position:</strong> ${coach.position}</p>
             <p><strong>School:</strong> ${coach.school}</p>
             <p><strong>Achievement:</strong> ${coach.achievement}</p>
+           <span class="click-hint">Click on my card!</span>
           </div>
           <a class="schedule-btn" href="schedule.html?coach=${encodeURIComponent(coach.name)}">
             Schedule Lesson
