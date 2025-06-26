@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Coach Finder</title>
+  <meta name="description" content="Find and schedule lessons with student-athlete coaches via FOS Sports Academy" />
+  <link rel="icon" href="favicon.ico" />
+  <title>FOS Sports Academy</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  
   <nav class="navbar">
     <div class="logo"><a href="index.html">FOS Sports Academy</a></div>
     <ul class="nav-links">
@@ -18,35 +20,44 @@
     </ul>
   </nav>
 
-  <button class="menu-btn">☰</button>
+  <button class="menu-btn" aria-label="Toggle filter panel">☰</button>
 
-  <div class="sidebar">
-    <h2>When would you like to schedule a lesson?</h2>
-    <h3>We'll filter our coaches!</h3>
-  
+  <aside class="sidebar" aria-label="Filter coaches">
+    <h2>See What Coaches Are Available When.</h2>
+    <p class="sidebar-info1">First have your desired sport selected!</p>
+    <p class="sidebar-sec">Then pick a day & time to find available coaches during those hours.</p>
+
     <div class="filter-controls">
       <select id="day-select">
         <option value="">Show All Coaches</option>
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
-        <option value="Sunday">Sunday</option>
+        <option>Monday</option>
+        <option>Tuesday</option>
+        <option>Wednesday</option>
+        <option>Thursday</option>
+        <option>Friday</option>
+        <option>Saturday</option>
+        <option>Sunday</option>
       </select>
-  
-      <input type="range" id="time-slider" min="0" max="23" value="14" />
-      <span id="time-display">2 PM - 3 PM</span>
+
+      <select id="start-select">
+        <option value="">Start Time</option>
+        <!-- JavaScript fills -->
+      </select>
+
+      <select id="end-select">
+        <option value="">End Time</option>
+        <!-- JavaScript fills -->
+      </select>
+
+      <span id="example-text">e.g. “Thursdays 6–8 PM”</span>
     </div>
-  </div>  
+  </aside>
 
   <main class="main-content">
-
     <section class="hero-sports">
       <div class="hero-content">
         <h1>Welcome to FOS Sports Academy</h1>
-        <p>Train with student-athletes at elite levels for a fraction of the cost. Empowering the next generation of athletes through personalized coaching.</p>
+        <p>Train with student-athletes at elite levels without breaking the bank.</p>
         <label for="sport-select">Choose Your Sport:</label>
         <select id="sport-select">
           <option value="">-- Select a Sport --</option>
@@ -56,13 +67,13 @@
           <option value="boysLax">Boys Lacrosse</option>
         </select>
       </div>
-    </section> 
+    </section>
 
-  <div class="coach-wrapper"></div>
     <div id="coach-section" class="hidden">
-      <div id="coach-container"></div>
+      <div class="coach-wrapper">
+        <div id="coach-container"></div>
+      </div>
     </div>
-  </div>
 
   <div id="services-section" class="services-section hidden">
     <h2>Our Services</h2>
@@ -103,7 +114,7 @@
         <p><strong>$89.99/hr</strong> for 2 kids at once</p>
         <hr />
         <p><strong>Phone:</strong> 908-645-4602</p>
-        <p><strong>Email:</strong> <a href="mailto:Fillourshoessportsacademy@gmail.com">Fillourshoessportsacademy@gmail.com</a></p>
+        <p><strong>Email:</strong> <a href="mailto:fillourshoessportsacademy@gmail.com">fillourshoessportsacademy@gmail.com</a></p>
       </div>
     </section>
   </main>

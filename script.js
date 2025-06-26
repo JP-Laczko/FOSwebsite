@@ -32,8 +32,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalContent = modal.querySelector(".modal-content");
 
   const dayDropdown = document.getElementById("day-select");
-  const timeSlider = document.getElementById("time-slider");
-  const timeDisplay = document.getElementById("time-display");
+
+  // Populate time dropdowns
+  const startSelect = document.getElementById('start-select');
+  const endSelect = document.getElementById('end-select');
+  for (let h = 6; h <= 22; h++) {
+    const fmt = formatTime(h);
+    startSelect.options.add(new Option(fmt, h));
+    endSelect.options.add(new Option(fmt, h + 1));
+  }
+  // Adding 1 more value for 11PM
+  endSelect.options.add(new Option(formatTime(23), 24));
 
   document.getElementById("sport-select").addEventListener("change", (e) => {
     filterAndRender();
@@ -62,12 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${displayH} ${period}`;
   }
 
-  // Update the time text below the slider
-  function updateTimeDisplay(value) {
-    const start = parseInt(value, 10);
-    const end = (start + 1) % 24;
-    timeDisplay.textContent = `${formatTime(start)} – ${formatTime(end)}`;
-  }
+
 
   // Sidebar toggle
   menuBtn.addEventListener("click", () => {
@@ -77,8 +81,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Main filter + render
   function filterAndRender() {
     const selectedDay = dayDropdown.value;
-    const selectedTime = parseInt(timeSlider.value, 10);
+    const startT = parseInt(startSelect.value);
+    const endT = parseInt(endSelect.value);
     const selectedSport = document.getElementById("sport-select").value;
+
+    if (startT >= endT) {
+      container.innerHTML = "<p class='no-results'><strong>End time must be after start time.</strong></p>";
+      return;
+    }
+
     if (selectedSport === "") {
       hideSportSections();
       return;
@@ -86,13 +97,20 @@ document.addEventListener("DOMContentLoaded", () => {
   
     let filtered = coaches.filter(c => {
       const isAvailable = c.available === "yes";
-      const matchesSport = !selectedSport || c.sport === selectedSport;
-  
+      const matchesSport = c.sport === selectedSport;
+
+      // Filter by day availability
+      const hasDay = selectedDay !== "" && c.schedule?.[selectedDay];
+      if (selectedDay && !hasDay) return false;
+
       let matchesTime = true;
-      if (selectedDay) {
+      if (selectedDay !== "" && startT && endT) {
         const slot = c.schedule?.[selectedDay];
-        matchesTime = slot && selectedTime >= slot.start && (selectedTime + 1) <= slot.end;
-      }
+        console.log("slot " + slot.end
+        );
+        console.log(endT);
+        matchesTime = slot && startT >= slot.start && endT <= slot.end + 1;
+      } 
   
       return isAvailable && matchesSport && matchesTime;
     });
@@ -105,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <strong>No coaches available at this time.</strong><br>
       `;
       container.appendChild(p);
-      console.log('No results message appended');
     } else {
       renderCoaches(filtered);
     }
@@ -238,13 +255,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Listen to filters
   dayDropdown.addEventListener("change", filterAndRender);
-  timeSlider.addEventListener("input", () => {
-    updateTimeDisplay(timeSlider.value);
-    filterAndRender();
-  });
-
-  // Initial time label
-  updateTimeDisplay(timeSlider.value);
+  startSelect.addEventListener("change", filterAndRender);
+  endSelect.addEventListener("change", filterAndRender);
 
   // Load data and kick off
   fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")

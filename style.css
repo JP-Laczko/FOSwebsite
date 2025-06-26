@@ -19,12 +19,13 @@ body {
     position: sticky;
     top: 0;
     z-index: 999;
-    width: 95vw;
+    width: 100vw;
   }
   
   .navbar .logo a {
     color: white;
-    margin-left: 1.8rem;
+    margin-left: 2rem;
+    padding-top: 0.2rem;
     font-size: 1.5rem;
     font-weight: bold;
     text-decoration: none;
@@ -36,7 +37,7 @@ body {
     display: flex;
     gap: 2rem;
     margin: 0.3rem;
-    padding: 0;
+    padding-right: 3rem;
   }
   
   .nav-links li a {
@@ -95,9 +96,11 @@ body {
   
   /* Menu Button */
   .menu-btn {
+    width: .5rem;
+    height: .2rem;
     position: fixed;
     top: 20px;
-    left: 15px;
+    left: 12px;   
     background-color: #0077cc;
     border: none;
     color: white;
@@ -105,7 +108,7 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     z-index: 1100;
-    border-radius: 5px;
+    border-radius: 8px;
   }
   
   /* Sidebar */
@@ -115,10 +118,10 @@ body {
     top: 0;
     height: 100%;
     width: 220px;
-    background-color: #abe1f6;
+    background: linear-gradient(to right, #ffecdb, #92d0fc); 
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
-    border-right: 1px solid #160a0a;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    border-right: 3px solid #160a0a;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 1000;
@@ -129,12 +132,21 @@ body {
   }
   
   .sidebar h2 {
-    margin-top: 40px;
+    margin-top: 55px;
+    color: #05396b; /* deep navy blue */
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6); /* subtle light halo */
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-align: center;
   }
 
-  .sidebar h3 {
-    margin-top: 10px;    
-  }
+  .sidebar p.sidebar-info1,
+.sidebar p.sidebar-sec {
+  margin-top: 10px; 
+  font-size: 1.2rem;
+  color: #102a43;
+  text-align: center;
+}
 
   /* Filter controls for time/day */
   .filter-controls {
@@ -153,6 +165,11 @@ body {
     font-size: 1rem;
     border-radius: 6px;
     border: 1px solid #ccc;
+  }
+
+  #example-text {
+    font-size: 0.9rem;
+    color: #33475b;
   }
   
   #time-display {
@@ -823,6 +840,7 @@ body {
     gap: 1rem;
     width: 100%;
     padding-top: 0.8rem;
+    margin-left: -2rem;
   }
 
   .hero-sports h1 {
@@ -867,14 +885,20 @@ body {
   }
 
   .service-item {
-    max-width: 90%;
+    max-width: 100%;
     font-size: 1rem;
   }
 
+  .service-item h3 {
+    margin-left: 2rem;
+
+  }
+
   .service-item img {
-    width: 90%;
+    width: 100%;
     height: auto;
-    margin: 0;
+    margin-left: 1rem;
+    display: block;
   }
 
   .info-block.pricing-contact p,
