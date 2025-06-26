@@ -144,6 +144,10 @@
     if (sessionStorage.getItem("openSidebar") === "true") {
       document.querySelector(".sidebar").classList.add("open");
       sessionStorage.removeItem("openSidebar"); 
+
+      document.querySelector(".menu-btn.secondary-menu-btn")
+        .classList.add("hide-on-sidebar");
+     
     }
     </script>
 </body>
