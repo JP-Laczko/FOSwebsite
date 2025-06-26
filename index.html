@@ -23,13 +23,22 @@
   <button class="menu-btn" aria-label="Toggle filter panel">☰</button>
 
   <aside class="sidebar" aria-label="Filter coaches">
-    <h2>See What Coaches Are Available When.</h2>
-    <p class="sidebar-info1">First have your desired sport selected!</p>
-    <p class="sidebar-sec">Then pick a day & time to find available coaches during those hours.</p>
+    <h2>Check Coach availability.</h2>
+    <p class="sidebar-info1">Select Your Desired Sport.</p>
+    <p class="sidebar-sec">Next, pick a day & starting time to find available coaches during those hours.</p>
 
     <div class="filter-controls">
+
+      <select id="sport-select-sidebar">
+        <option value="">Select Sport</option>
+        <option value="baseball">Baseball</option>
+        <option value="girlsSoccer">Girls Soccer</option>
+        <option value="football">Football</option>
+        <option value="boysLax">Boys Lacrosse</option>
+      </select>
+
       <select id="day-select">
-        <option value="">Show All Coaches</option>
+        <option value="">Select Day</option>
         <option>Monday</option>
         <option>Tuesday</option>
         <option>Wednesday</option>
@@ -44,12 +53,7 @@
         <!-- JavaScript fills -->
       </select>
 
-      <select id="end-select">
-        <option value="">End Time</option>
-        <!-- JavaScript fills -->
-      </select>
-
-      <span id="example-text">e.g. “Thursdays 6–8 PM”</span>
+      <span id="example-text">e.g. “Thursdays starting at 6 PM”</span>
     </div>
   </aside>
 
@@ -58,14 +62,17 @@
       <div class="hero-content">
         <h1>Welcome to FOS Sports Academy</h1>
         <p>Train with student-athletes at elite levels without breaking the bank.</p>
-        <label for="sport-select">Choose Your Sport:</label>
-        <select id="sport-select">
+        <label for="sport-select-main">Choose Your Sport:</label>
+        <select id="sport-select-main">
           <option value="">-- Select a Sport --</option>
           <option value="baseball">Baseball</option>
           <option value="girlsSoccer">Girls Soccer</option>
           <option value="football">Football</option>
           <option value="boysLax">Boys Lacrosse</option>
+          <option value="boysLax">Boys Lacrosse</option>
         </select>
+
+        <button class="menu-btn secondary-menu-btn" aria-label="Open Sidebar Menu">Check Coach Availability</button>
       </div>
     </section>
 
@@ -114,7 +121,13 @@
         <p><strong>$89.99/hr</strong> for 2 kids at once</p>
         <hr />
         <p><strong>Phone:</strong> 908-645-4602</p>
-        <p><strong>Email:</strong> <a href="mailto:fillourshoessportsacademy@gmail.com">fillourshoessportsacademy@gmail.com</a></p>
+        <p><strong>Email:</strong> 
+          <a href="mailto:fillourshoessportsacademy@gmail.com">
+            fillourshoessportsacademy@gmail.com
+          </a><br>
+          (If the link doesn’t open your email app, copy and paste it manually)
+        </p>
+        
       </div>
     </section>
   </main>
@@ -126,5 +139,12 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+  // Open sidebar automatically if flag is set from schedule.html
+    if (sessionStorage.getItem("openSidebar") === "true") {
+      document.querySelector(".sidebar").classList.add("open");
+      sessionStorage.removeItem("openSidebar"); 
+    }
+    </script>
 </body>
 </html>

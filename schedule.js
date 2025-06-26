@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Using a coach select to prevent user error for sending emails to coaches
   const coachSelect = document.getElementById("coach");
   const coachParam = new URLSearchParams(window.location.search).get("coach");
+
+  document.querySelector(".secondary-menu-btn").addEventListener("click", () => {
+    document.querySelector(".sidebar").classList.toggle("open");
+  });
   
   let sortedCoaches = [];
 

@@ -37,6 +37,7 @@
         <input type="email" name="user_email" id="user_email" required />
 
         <label for="coach">Choose Coach:</label>
+        <button type="button" id="go-to-filters-btn" class="secondary-menu-btn">Check Coach Availability</button>
         <select name="coach" id="coach" required>
           <option value="">Loading coaches...</option>
         </select>
@@ -57,5 +58,12 @@
   </main>
 
   <script src="schedule.js"></script>
+  <script>
+    document.getElementById("go-to-filters-btn").addEventListener("click", () => {
+      sessionStorage.setItem("openSidebar", "true");
+      window.location.href = "index.html";
+    });
+  </script>
+  
 </body>
 </html>

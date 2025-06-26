@@ -30,28 +30,39 @@ document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("coach-container");
   const modal = document.getElementById("bio-modal");
   const modalContent = modal.querySelector(".modal-content");
-
   const dayDropdown = document.getElementById("day-select");
-
+  const sportSelectSidebar = document.getElementById("sport-select-sidebar");
+  const sportSelectMain = document.getElementById("sport-select-main");
+  
   // Populate time dropdowns
   const startSelect = document.getElementById('start-select');
-  const endSelect = document.getElementById('end-select');
   for (let h = 6; h <= 22; h++) {
     const fmt = formatTime(h);
     startSelect.options.add(new Option(fmt, h));
-    endSelect.options.add(new Option(fmt, h + 1));
   }
-  // Adding 1 more value for 11PM
-  endSelect.options.add(new Option(formatTime(23), 24));
 
-  document.getElementById("sport-select").addEventListener("change", (e) => {
+  // Used to sync the 2 dropdowns
+  function syncSportSelects(source, target) {
+    target.value = source.value;
+    selectedSport = source.value;
+    filterAndRender();
+    renderServices(selectedSport);
+    showSportSections();
+  }
+  
+  sportSelectMain.addEventListener("change", () => {
+    syncSportSelects(sportSelectMain, sportSelectSidebar)
+    filterAndRender();
+  });
+  
+  sportSelectSidebar.addEventListener("change", () => {
+    syncSportSelects(sportSelectSidebar, sportSelectMain)
     filterAndRender();
   });
 
-    const sportSelect = document.getElementById("sport-select");
-
-    sportSelect.addEventListener("change", (e) => {
-      selectedSport = e.target.value;
+  document.querySelector(".secondary-menu-btn").addEventListener("click", () => {
+    document.querySelector(".sidebar").classList.toggle("open");
+  });
 
     if (selectedSport) {
       filterAndRender();
@@ -61,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = ""; // hide coach cards
       hideSportSections();
     }
-  });
+
 
   // Format hour (24→12h with AM/PM)
   function formatTime(hour) {
@@ -71,60 +82,59 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${displayH} ${period}`;
   }
 
-
+  const secondaryMenuBtn = document.querySelector(".secondary-menu-btn");
 
   // Sidebar toggle
   menuBtn.addEventListener("click", () => {
     sidebar.classList.toggle("open");
+
+    if (sidebar.classList.contains("open")) {
+      secondaryMenuBtn?.classList.add("hide-on-sidebar");
+    } else {
+      secondaryMenuBtn?.classList.remove("hide-on-sidebar");
+    }
+
   });
 
   // Main filter + render
   function filterAndRender() {
     const selectedDay = dayDropdown.value;
     const startT = parseInt(startSelect.value);
-    const endT = parseInt(endSelect.value);
-    const selectedSport = document.getElementById("sport-select").value;
-
-    if (startT >= endT) {
-      container.innerHTML = "<p class='no-results'><strong>End time must be after start time.</strong></p>";
-      return;
-    }
+    const selectedSport = document.getElementById("sport-select-main").value;
 
     if (selectedSport === "") {
+      container.innerHTML = "";
       hideSportSections();
-      return;
-    };
-  
-    let filtered = coaches.filter(c => {
-      const isAvailable = c.available === "yes";
-      const matchesSport = c.sport === selectedSport;
-
-      // Filter by day availability
-      const hasDay = selectedDay !== "" && c.schedule?.[selectedDay];
-      if (selectedDay && !hasDay) return false;
-
-      let matchesTime = true;
-      if (selectedDay !== "" && startT && endT) {
-        const slot = c.schedule?.[selectedDay];
-        console.log("slot " + slot.end
-        );
-        console.log(endT);
-        matchesTime = slot && startT >= slot.start && endT <= slot.end + 1;
-      } 
-  
-      return isAvailable && matchesSport && matchesTime;
-    });
-
-    if (filtered.length === 0) {
-      container.innerHTML = ""; 
-      const p = document.createElement('p');
-      p.className = 'no-results';
-      p.innerHTML = `
-        <strong>No coaches available at this time.</strong><br>
-      `;
-      container.appendChild(p);
     } else {
-      renderCoaches(filtered);
+  
+      let filtered = coaches.filter(c => {
+        const isAvailable = c.available === "yes";
+        const matchesSport = c.sport === selectedSport;
+
+        // Filter by day availability
+        const hasDay = selectedDay !== "" && c.schedule?.[selectedDay];
+        if (selectedDay && !hasDay) return false;
+
+        let matchesTime = true;
+        if (selectedDay !== "" && startT) {
+          const slot = c.schedule?.[selectedDay];
+          matchesTime = slot && startT >= slot.start
+        } 
+    
+        return isAvailable && matchesSport && matchesTime;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = ""; 
+        const p = document.createElement('p');
+        p.className = 'no-results';
+        p.innerHTML = `
+          <strong>No coaches available at this time.</strong><br>
+        `;
+        container.appendChild(p);
+      } else {
+        renderCoaches(filtered);
+      }
     }
   }  
 
@@ -183,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function hideSportSections() {
     document.getElementById("services-section")?.classList.add("hidden");
     document.getElementById("pricing-contact")?.classList.add("hidden");
-  
+
     const coachSection = document.getElementById('coach-section');
     coachSection?.classList.remove('has-padding'); // remove padding when hidden
   }
@@ -191,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showSportSections() {
     document.getElementById("services-section")?.classList.remove("hidden");
     document.getElementById("pricing-contact")?.classList.remove("hidden");
-  
+
     const coachSection = document.getElementById('coach-section');
     coachSection?.classList.add('has-padding'); // add padding when shown
   }
@@ -256,7 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Listen to filters
   dayDropdown.addEventListener("change", filterAndRender);
   startSelect.addEventListener("change", filterAndRender);
-  endSelect.addEventListener("change", filterAndRender);
 
   // Load data and kick off
   fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
@@ -266,4 +275,5 @@ document.addEventListener("DOMContentLoaded", () => {
       filterAndRender();
     })
     .catch(err => console.error("Error fetching coaches:", err));
+
 });
