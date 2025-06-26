@@ -62,6 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelector(".secondary-menu-btn").addEventListener("click", () => {
     document.querySelector(".sidebar").classList.toggle("open");
+
+    if (sidebar.classList.contains("open")) {
+      secondaryMenuBtn?.classList.add("hide-on-sidebar");
+    } else {
+      secondaryMenuBtn?.classList.remove("hide-on-sidebar");
+    }
   });
 
     if (selectedSport) {
