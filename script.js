@@ -7,6 +7,11 @@ const sportServices = {
     { title: "Pitching Mechanics", image: "Images/Pitching.jpeg" },
     { title: "Fielding Drills", image: "Images/Fielding.jpeg" },
   ],
+  softball: [
+    { title: "Swing Mechanics", image: "Images/SBHitting.jpeg" },
+    { title: "Pitching Mechanics", image: "Images/SBPitching.jpeg" },
+    { title: "Fielding Drills", image: "Images/SBFielding.jpeg" },
+  ],
   football: [
     { title: "Throwing Mechanics", image: "Images/FBThrowing.jpeg" },
     { title: "Receiving Drills", image: "Images/FBCatching.jpeg" },

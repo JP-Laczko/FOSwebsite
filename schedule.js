@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     const name = document.getElementById("user_name").value;
     const email = document.getElementById("user_email").value;
+    const user_phone = document.getElementById("user_phone").value;
     const coach = document.getElementById("coach").value;
     // Search c where c.name = the selected coach, then get their email
     const matchedCoach = sortedCoaches.find(c => c.name === coach);
@@ -62,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
     const message = document.getElementById("message").value.trim();
-    const optionalMessage = message === "" ? "None" : message;
 
     // Format date and time
     const rawDate = new Date(`${date}T${time}`);
@@ -77,11 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
     emailjs.send("service_b2jlk03", "template_wfpkvcf", {
       user_name: name,
       user_email: email,
+      user_phone: user_phone,
       coach: coach,
       coach_email: coach_email,
       formatted_date: formattedDate,
       formatted_time: formattedTime,
-      optional_message: optionalMessage
+      message: message
     }).then(
       () => {
         alert("Your request was sent successfully!");

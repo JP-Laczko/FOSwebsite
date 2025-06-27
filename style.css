@@ -58,7 +58,7 @@ body {
     width: 100vw;   
     margin-top: 0;
     min-height: 350px;   
-    background-image: url('Images/FOSimg.jpg');
+    background-image: url('Images/FOSLogo.JPG');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -524,17 +524,6 @@ body {
   color: #555;
   margin: 2rem auto;
 }
-  
-  /* Responsive Sidebar */
-  @media (max-width: 768px) {
-    .sidebar {
-      transform: translateX(-100%);
-    }
-  
-    .sidebar.open {
-      transform: translateX(0);
-    }
-  }
 
   .services-section {
     width: 100%;
@@ -561,6 +550,11 @@ body {
       1px  1px 6px rgba(0, 0, 0, 1);
     font-weight: 700;
     text-align: center;
+  }
+
+  .services-section h3 {
+    margin-left: 2.5rem;
+    margin-right: .7rem;
   }
   
   .services-container {
@@ -642,15 +636,6 @@ body {
     text-decoration: underline;
   }
   
-  /* Responsive */
-  
-  @media (max-width: 700px) {
-    .info-section {
-      flex-direction: column;
-      align-items: center;
-    }
-  }
-  
   .modal {
     position: fixed;
     top: 50%;
@@ -693,22 +678,6 @@ body {
 
   .hidden {
     display: none;
-  }
-
-  /* to optimize images for mobile screens */ 
-  @media (max-width: 600px) {
-    .services-container {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .service-item img {
-      width: 60vw;  
-    }
-  
-    .service-item h3 {
-      font-size: 1.2rem;
-    }
   }
 
   .form-section {
@@ -870,6 +839,14 @@ body {
     padding-top: 0.8rem;
   }
 
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
   .nav-links {
     flex-direction: column;
     gap: 1rem;
@@ -922,11 +899,12 @@ body {
   .service-item {
     max-width: 100%;
     font-size: 1rem;
+    text-align: center;
   }
 
   .service-item h3 {
     margin-left: 2rem;
-
+    font-size: 1.2rem;
   }
 
   .service-item img {
@@ -968,6 +946,8 @@ body {
     max-width: 90vw;
     padding: 0 1.5rem;
     overflow-x: visible;
+    flex-direction: column;
+    align-items: center;
   }
 
   .hide-on-sidebar {
