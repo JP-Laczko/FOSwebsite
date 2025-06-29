@@ -28,14 +28,16 @@ document.addEventListener("DOMContentLoaded", () => {
       coachSelect.innerHTML = '<option value="">Select a coach</option>';
   
       sortedCoaches.forEach(coach => {
-        const option = document.createElement("option");
-        option.value = coach.name;
-        const prettySport = sportNames[coach.sport] || "No Sport";
-        option.textContent = `${coach.name} (${prettySport})`;
-        if (coachParam && coachParam === coach.name) {
-          option.selected = true;
+        if(coach.available === "yes") {
+          const option = document.createElement("option");
+          option.value = coach.name;
+          const prettySport = sportNames[coach.sport] || "No Sport";
+          option.textContent = `${coach.name} (${prettySport})`;
+          if (coachParam && coachParam === coach.name) {
+            option.selected = true;
+          }
+          coachSelect.appendChild(option);
         }
-        coachSelect.appendChild(option);
       });
     })
     .catch(err => {

@@ -5,7 +5,7 @@
         "name": "Launch Chrome against Live Server",
         "type": "chrome",
         "request": "launch",
-        "url": "http://127.0.0.1:5500/index.html", // <-- replace with your Live Server port and file path
+        "url": "http://127.0.0.1:4000/index.html", // <-- replace with your Live Server port and file path
         "webRoot": "${workspaceFolder}"
       }
     ]

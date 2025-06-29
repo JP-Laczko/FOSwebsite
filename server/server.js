@@ -1,60 +1,92 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
-const Booking = require('./models/Booking');
+import dotenv from "dotenv";
+dotenv.config();
 
-// Instance of express app set port from environment or default to 5000
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+import path from "path";
+import { fileURLToPath } from "url";
+import mongoose from "mongoose";
+
+import bookingRoutes from "./routes/bookings.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:4000",
+  "http://127.0.0.1:4000",
+];
+
+// CORS
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error("CORS policy: Origin not allowed"));
+  },
+  credentials: true,
+}));
+
+// Sessions
+app.use(session({
+  secret: process.env.SESSION_SECRET || "defaultsecret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60,
+  },
+}));
+
+// JSON parser
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {})
+  .catch(() => {});
 
-// Test Route
+// Auth middleware
+function checkAuth(req, res, next) {
+  if (req.session) {
+    next();
+  } else {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+}
+
+// Admin login route
+app.post("/api/admin/login", (req, res) => {
+  const { password } = req.body;
+  if (password === process.env.ADMIN_PASSWORD) {
+    req.session.isAdmin = true;
+    res.json({ message: "Login successful" });
+  } else {
+    res.status(401).json({ message: "Invalid password" });
+  }
+});
+
+// Routes
+app.use("/api/bookings", checkAuth, bookingRoutes);
+
+// Static files
+app.use(express.static(path.join(__dirname, "../client")));
+
 app.get("/", (req, res) => {
-  res.send("FOS Backend is running!");
+  res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log("Server running on port " + PORT);
 });
-
-/* Endpoints */
-// Get all bookings
-app.get("/api/bookings", async (req, res) => {
-  try {
-    const bookings = await Booking.find();
-    res.json(bookings);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Add a new booking
-app.post("/api/bookings", async (req, res) => {
-  const booking = new Booking({
-    coach: req.body.coach,
-    athleteName: req.body.athleteName,
-    date: req.body.date,
-    startTime: req.body.startTime,
-    endTime: req.body.endTime,
-    status: req.body.status || 'booked',
-    notes: req.body.notes || '',
-  });
-
-  try {
-    const newBooking = await booking.save();
-    res.status(201).json(newBooking);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-

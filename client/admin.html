@@ -1,0 +1,64 @@
+<!-- client/admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login - FOS Scheduler</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Admin Login</h2>
+    <form id="admin-login-form">
+      <input type="password" id="admin-password" placeholder="Enter admin password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p id="login-error" class="hidden" style="color:red;">Invalid password. Try again.</p>
+  </div>
+
+  <div id="admin-dashboard" class="hidden">
+    <div id="calendar"></div>
+  </div>
+
+  <div id="booking-modal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-btn" id="close-btn">x</button>
+      <h2>New Booking</h2>
+      <form id="booking-form">
+        <label>Athlete Name:</label>
+        <input type="text" id="athleteName" name="athleteName" required />
+  
+        <label>Coach:</label>
+        <select name="coach" id="admin-coach-select" required>
+          <option value="">Loading coaches...</option>
+        </select>
+  
+        <label>Time:</label>
+        <input type="time" id="startTime" name="startTime" required />
+  
+        <label>Notes:</label>
+        <textarea id="notes" name="notes" rows="2"></textarea>
+  
+        <input type="hidden" id="bookingDate" name="bookingDate" />
+        <button type="submit">Add Booking</button>
+      </form>
+    </div>
+  </div>  
+
+  <div id="view-booking-modal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-btn" id="view-close-btn">×</button>
+      <button id="delete-booking-btn">Delete Booking</button>
+      <h2>Booking Details</h2>
+      <p><strong>Athlete:</strong> <span id="view-athleteName"></span></p>
+      <p><strong>Coach:</strong> <span id="view-coach"></span></p>
+      <p><strong>Date:</strong> <span id="view-date"></span></p>
+      <p><strong>Time:</strong> <span id="view-time"></span></p>
+      <p><strong>Notes:</strong> <span id="view-notes"></span></p>
+    </div>
+  </div>  
+  
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
