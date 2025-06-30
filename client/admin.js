@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // const API_BASE_URL = window.location.hostname === "127.0.0.1"
-  //   ? "http://localhost:4000"
-  //   : "https://fos-website.onrender.com";
-
-  // const API_BASE_URL = "https://fos-website.onrender.com";
-  const API_BASE_URL = "http://localhost:4000";
+  const API_BASE_URL =
+  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:4000"
+    : "https://fos-website.onrender.com";
 
   const sportNames = {
     baseball: "Baseball",
