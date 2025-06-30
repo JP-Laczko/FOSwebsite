@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const API_BASE_URL = window.location.hostname === "127.0.0.1"
+    ? "http://localhost:4000"
+    : "https://fos-website.onrender.com";
+
   const sportNames = {
     baseball: "Baseball",
     girlsSoccer: "Girls Soccer",
@@ -18,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const password = passwordInput.value;
 
     try {
-      const res = await fetch("http://localhost:4000/api/admin/login", {
+      const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // Important: include cookies in fetch
@@ -37,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
         loginError.classList.remove("hidden");
       }
     } catch (err) {
-      loginError.classList.remove("hidden");
+      loginError.classList.remove("hidden" + err);
     }
   });
 
@@ -60,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       events: async function (fetchInfo, successCallback, failureCallback) {
         try {
-          const res = await fetch("http://localhost:4000/api/bookings", {
+          const res = await fetch(`${API_BASE_URL}/api/bookings`, {
             method: "GET",
             credentials: "include", // Include credentials (cookies)
             headers: {
@@ -94,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   },
                 };
               } catch (err) {
-                return null;
+                return err;
               }
             })
             .filter(Boolean);
@@ -191,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       try {
-        const res = await fetch("http://localhost:4000/api/bookings", {
+        const res = await fetch(`${API_BASE_URL}/api/bookings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include", // important for session cookie
@@ -207,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         loadCalendar();
       } catch (err) {
-        alert("Error adding booking");
+        alert("Error adding booking" + err);
       }
     });
 
@@ -216,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:4000/api/bookings/${currentBookingId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/${currentBookingId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -228,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       loadCalendar();
     } catch (err) {
-      alert("Error deleting booking");
+      alert("Error deleting booking" + err);
     }
   });
 });
