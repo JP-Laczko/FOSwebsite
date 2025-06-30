@@ -38,7 +38,6 @@ app.use(cors({
   credentials: true,
 }));
 
-
 const isProduction = process.env.NODE_ENV === "production";
 app.set("trust proxy", 1);
 // Sessions
@@ -48,7 +47,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: isProduction,
+    secure: isProduction, // true in prod, false locally
     sameSite: isProduction ? "none" : "lax", 
     maxAge: 1000 * 60 * 60,
   },
@@ -62,10 +61,19 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {})
   .catch(() => {});
 
+  app.use((req, res, next) => {
+    console.log("🛰️  Incoming request:");
+    console.log("   → Origin:", req.headers.origin);
+    console.log("   → Cookies:", req.headers.cookie);
+    console.log("   → Session data:", req.session);
+    next();
+  });
+
 // Auth middleware
 function checkAuth(req, res, next) {
-  if (req.session) {
-    next();
+  console.log("Session check:", req.session);
+  if (req.session && req.session.isAdmin) {
+    return next();
   } else {
     res.status(401).json({ message: "Unauthorized" });
   }

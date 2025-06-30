@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL =
-  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    ? "http://localhost:4000"
+  ["localhost", "127.0.0.1"].includes(window.location.hostname)
+    ? "http://127.0.0.1:4000"
     : "https://fossportsacademy.com";
 
   const sportNames = {
