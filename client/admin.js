@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL =
     ["localhost", "127.0.0.1"].includes(window.location.hostname)
       ? "http://127.0.0.1:4000"
-      : "https://fos-website.onrender.com";
+      : "https://fossportsacademy.com";
 
   console.log("🚀 API_BASE_URL set to:", API_BASE_URL);
 

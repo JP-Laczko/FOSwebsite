@@ -69,17 +69,6 @@ mongoose.connect(process.env.MONGO_URI)
     console.error("❌ MongoDB connection error:", err);
   });
 
-// Log every incoming request's key details
-app.use((req, res, next) => {
-  console.log("🛰️  Incoming request:");
-  console.log("   → Method:", req.method);
-  console.log("   → URL:", req.originalUrl);
-  console.log("   → Origin:", req.headers.origin);
-  console.log("   → Cookies:", req.headers.cookie);
-  console.log("   → Session data:", req.session);
-  next();
-});
-
 // Auth middleware
 function checkAuth(req, res, next) {
   console.log("🔐 Checking auth for", req.originalUrl);
