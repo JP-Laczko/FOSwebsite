@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const API_BASE_URL = window.location.hostname === "127.0.0.1"
-    ? "http://localhost:4000"
-    : "https://fos-website.onrender.com";
+  // const API_BASE_URL = window.location.hostname === "127.0.0.1"
+  //   ? "http://localhost:4000"
+  //   : "https://fos-website.onrender.com";
+
+  // const API_BASE_URL = "https://fos-website.onrender.com";
+  const API_BASE_URL = "http://localhost:4000";
 
   const sportNames = {
     baseball: "Baseball",
@@ -25,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Important: include cookies in fetch
+        credentials: "include",
         body: JSON.stringify({ password }),
       });
 

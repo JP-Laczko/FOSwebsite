@@ -38,6 +38,9 @@ app.use(cors({
   credentials: true,
 }));
 
+
+const isProduction = process.env.NODE_ENV === "production";
+app.set("trust proxy", 1);
 // Sessions
 app.use(session({
   secret: process.env.SESSION_SECRET || "defaultsecret",
@@ -45,8 +48,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax", 
     maxAge: 1000 * 60 * 60,
   },
 }));
