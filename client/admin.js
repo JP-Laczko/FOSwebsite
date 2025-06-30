@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL =
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:4000"
-    : "https://fos-website.onrender.com";
+    : "https://fossportsacademy.com";
 
   const sportNames = {
     baseball: "Baseball",
