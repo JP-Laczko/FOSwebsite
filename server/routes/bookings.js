@@ -9,6 +9,7 @@ router.get("/", async (req, res) => {
     const bookings = await Booking.find();
     res.json(bookings);
   } catch (err) {
+    console.error("Error fetching bookings:", err);
     res.status(500).json({ message: err.message });
   }
 });
