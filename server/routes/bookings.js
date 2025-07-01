@@ -54,4 +54,22 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// PATCH (Edit) a booking
+router.patch("/:id", async (req, res) => {
+  try {
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedBooking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    res.json(updatedBooking);
+  } catch (err) {
+    console.error("Error updating booking:", err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
 export default router;

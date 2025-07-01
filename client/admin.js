@@ -9,13 +9,21 @@ document.addEventListener("DOMContentLoaded", function () {
     girlsSoccer: "Girls Soccer",
     football: "Football",
     boysLax: "Boys Lacrosse",
+    basketball: "Basketball",
+    softball: "Softball",
   };
+
+  let deleteConfirmActive = false;
+  let deleteConfirmTimeout = null;
   let currentBookingId = null;
 
   const loginForm = document.getElementById("admin-login-form");
   const passwordInput = document.getElementById("admin-password");
   const loginError = document.getElementById("login-error");
   const dashboard = document.getElementById("admin-dashboard");
+  const editBtn = document.getElementById("edit-booking-btn");
+  const saveBtn = document.getElementById("save-booking-btn");
+  const cancelBtn = document.getElementById("cancel-booking-btn");
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -35,8 +43,8 @@ document.addEventListener("DOMContentLoaded", function () {
         loginError.classList.add("hidden");
         document.querySelector(".login-container").remove();
         dashboard.classList.remove("hidden");
-
-        loadCoaches();
+        const coachSelect = document.getElementById("admin-coach-select");
+        loadCoaches(coachSelect);
         loadCalendar();
       } else {
         console.warn("⚠️ Login failed");
@@ -62,6 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
       height: "auto",
+      editable: true,
+      eventStartEditable: true,
       dateClick: (info) => {
         openModal(info.dateStr);
       },
@@ -129,10 +139,137 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("view-booking-modal").classList.remove("hidden");
       },
+      eventDrop: async function (info) {
+        const event = info.event;
+        const newDate = event.start;
+    
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/bookings/${event.id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              date: newDate.toISOString().split("T")[0],
+              startTime: newDate.toISOString().split("T")[1].slice(0, 5),
+            }),
+          });
+    
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("Failed to update booking: " + errorText);
+          }          
+    
+          alert("Booking updated via drag-and-drop");
+        } catch (err) {
+          console.error("❌ Error updating booking:", err);
+          alert("Drag-and-drop update failed. Reloading calendar.");
+          info.revert(); // 🎯 Revert change if it fails
+        }
+      },
     });
 
     calendar.render();
   }
+
+  // Function to toggle between view and edit modes
+function toggleEditMode(isEditing) {
+  const modal = document.getElementById("view-booking-modal");
+
+  const athleteNameEl = document.getElementById("view-athleteName");
+  const coachEl = document.getElementById("view-coach");
+  const dateEl = document.getElementById("view-date");
+  const timeEl = document.getElementById("view-time");
+  const notesEl = document.getElementById("view-notes");
+
+  if (isEditing) {
+    const currentCoach = coachEl.textContent.trim();
+  
+    athleteNameEl.innerHTML = `<input id="edit-athleteName" type="text" value="${athleteNameEl.textContent}" />`;
+  
+    coachEl.innerHTML = `<select id="edit-coach"></select>`;
+    const coachSelect = document.getElementById("edit-coach");
+  
+    loadCoaches(coachSelect).then(() => {
+      coachSelect.value = currentCoach;
+    });
+  
+    dateEl.innerHTML = `<input id="edit-date" type="date" value="${dateEl.textContent}" />`;
+    timeEl.innerHTML = `<input id="edit-time" type="time" value="${timeEl.textContent}" />`;
+    notesEl.innerHTML = `<textarea id="edit-notes">${notesEl.textContent === "None" ? "" : notesEl.textContent}</textarea>`;
+  
+    editBtn.classList.add("hidden");
+    saveBtn.classList.remove("hidden");
+    cancelBtn.classList.remove("hidden");
+  } else {
+    // Revert inputs back to text
+    const athleteNameInput = document.getElementById("edit-athleteName");
+    const coachInput = document.getElementById("edit-coach");
+    const dateInput = document.getElementById("edit-date");
+    const timeInput = document.getElementById("edit-time");
+    const notesInput = document.getElementById("edit-notes");
+
+    athleteNameEl.textContent = athleteNameInput.value;
+    coachEl.textContent = coachInput.value;
+    dateEl.textContent = dateInput.value;
+    timeEl.textContent = timeInput.value;
+    notesEl.textContent = notesInput.value || "None";
+
+    editBtn.classList.remove("hidden");
+    saveBtn.classList.add("hidden");
+    cancelBtn.classList.add("hidden");
+  }
+}
+
+// Click listeners
+
+editBtn.addEventListener("click", () => {
+  toggleEditMode(true);
+});
+
+cancelBtn.addEventListener("click", () => {
+  toggleEditMode(false);
+});
+
+saveBtn.addEventListener("click", async () => {
+  const updatedBooking = {
+    athleteName: document.getElementById("edit-athleteName").value.trim(),
+    coach: document.getElementById("edit-coach").value.trim(),
+    date: document.getElementById("edit-date").value,
+    startTime: document.getElementById("edit-time").value,
+    notes: document.getElementById("edit-notes").value.trim(),
+  };
+
+  // Basic validation
+  if (
+    !updatedBooking.athleteName ||
+    !updatedBooking.coach ||
+    !updatedBooking.date ||
+    !updatedBooking.startTime
+  ) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/bookings/${currentBookingId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(updatedBooking),
+    });
+
+    if (!res.ok) throw new Error("Failed to update booking");
+
+    alert("Booking updated successfully!");
+    toggleEditMode(false);
+    loadCalendar();
+  } catch (err) {
+    console.error("❌ Error updating booking:", err);
+    alert("Error updating booking: " + err);
+  }
+}); 
 
   function openModal(dateStr) {
     const modal = document.getElementById("booking-modal");
@@ -145,16 +282,16 @@ document.addEventListener("DOMContentLoaded", function () {
     modal.classList.add("hidden");
   }
 
-  function loadCoaches() {
+  function loadCoaches(selectElement) {
     const coachSelect = document.getElementById("admin-coach-select");
 
-    fetch(
+    return fetch(
       "https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json"
     )
       .then((res) => res.json())
       .then((data) => {
         const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
-        coachSelect.innerHTML = '<option value="">Select a coach</option>';
+        selectElement.innerHTML = '<option value="">Select a coach</option>';
 
         sorted.forEach((coach) => {
           if (coach.available === "yes") {
@@ -162,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
             option.value = coach.name;
             const sportName = sportNames?.[coach.sport] || "No Sport";
             option.textContent = `${coach.name} (${sportName})`;
-            coachSelect.appendChild(option);
+            selectElement.appendChild(option);
           }
         });
       })
@@ -216,27 +353,56 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.getElementById("delete-booking-btn").addEventListener("click", async () => {
+    const deleteBtn = document.getElementById("delete-booking-btn");
+  
+    if (!deleteConfirmActive) {
+      // First click: ask for confirmation
+      deleteBtn.textContent = "Confirm Delete?";
+      deleteBtn.classList.add("bg-red-600"); // optional styling
+      deleteConfirmActive = true;
+  
+      // Reset after 5 seconds if no second click
+      deleteConfirmTimeout = setTimeout(() => {
+        deleteBtn.textContent = "Delete Booking";
+        deleteBtn.classList.remove("bg-red-600");
+        deleteConfirmActive = false;
+      }, 5000);
+  
+      return;
+    }
+  
+    // Second click: proceed with deletion
+    clearTimeout(deleteConfirmTimeout);
+    deleteBtn.textContent = "Deleting...";
+    deleteBtn.disabled = true;
+  
     if (!currentBookingId) {
       console.warn("⚠️ No booking selected to delete");
       return;
     }
-
+  
     try {
       const res = await fetch(`${API_BASE_URL}/api/bookings/${currentBookingId}`, {
         method: "DELETE",
         credentials: "include",
       });
-
+  
       if (!res.ok) throw new Error("Failed to delete booking");
-
+  
       alert("Booking deleted successfully!");
       document.getElementById("view-booking-modal").classList.add("hidden");
       currentBookingId = null;
-
+  
       loadCalendar();
     } catch (err) {
       console.error("❌ Error deleting booking:", err);
       alert("Error deleting booking: " + err);
+    } finally {
+      deleteBtn.textContent = "Delete Booking";
+      deleteBtn.disabled = false;
+      deleteBtn.classList.remove("bg-red-600");
+      deleteConfirmActive = false;
     }
   });
+  
 });
