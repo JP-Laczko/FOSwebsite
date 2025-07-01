@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const API_BASE_URL =
-  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    ? "http://localhost:4000"
-    : "https://fossportsacademy.com";
+    ["localhost", "127.0.0.1"].includes(window.location.hostname)
+      ? "http://127.0.0.1:4000"
+      : "https://fossportsacademy.com";
 
   const sportNames = {
     baseball: "Baseball",
@@ -39,10 +39,12 @@ document.addEventListener("DOMContentLoaded", function () {
         loadCoaches();
         loadCalendar();
       } else {
+        console.warn("⚠️ Login failed");
         loginError.classList.remove("hidden");
       }
     } catch (err) {
-      loginError.classList.remove("hidden" + err);
+      console.error("❌ Login error:", err);
+      loginError.classList.remove("hidden");
     }
   });
 
@@ -64,13 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
         openModal(info.dateStr);
       },
       events: async function (fetchInfo, successCallback, failureCallback) {
+
         try {
           const res = await fetch(`${API_BASE_URL}/api/bookings`, {
             method: "GET",
-            credentials: "include", // Include credentials (cookies)
-            headers: {
-              "Content-Type": "application/json",
-            },
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
           });
 
           if (!res.ok) {
@@ -99,19 +100,20 @@ document.addEventListener("DOMContentLoaded", function () {
                   },
                 };
               } catch (err) {
-                return err;
+                console.error("⚠️ Error mapping booking:", err);
+                return null;
               }
             })
             .filter(Boolean);
 
           successCallback(events);
         } catch (err) {
+          console.error("❌ Failed to fetch bookings:", err);
           failureCallback(err);
         }
       },
       eventClick: function (info) {
         const event = info.event;
-
         currentBookingId = event.id;
 
         document.getElementById("view-athleteName").textContent =
@@ -149,9 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(
       "https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json"
     )
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
         const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
         coachSelect.innerHTML = '<option value="">Select a coach</option>';
@@ -166,65 +166,67 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("❌ Error loading coaches:", err);
         coachSelect.innerHTML = '<option value="">Error loading coaches</option>';
       });
   }
 
-  document
-    .getElementById("booking-form")
-    .addEventListener("submit", async (e) => {
-      e.preventDefault();
+  document.getElementById("booking-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const coach = document.getElementById("admin-coach-select").value;
-      const athleteName = document.getElementById("athleteName").value;
-      const date = document.getElementById("bookingDate").value;
-      const startTime = document.getElementById("startTime").value;
-      const notes = document.getElementById("notes").value;
+    const coach = document.getElementById("admin-coach-select").value;
+    const athleteName = document.getElementById("athleteName").value;
+    const date = document.getElementById("bookingDate").value;
+    const startTime = document.getElementById("startTime").value;
+    const notes = document.getElementById("notes").value;
 
-      if (!coach || !athleteName || !date || !startTime) {
-        alert("Please fill in all required fields.");
-        return;
-      }
+    if (!coach || !athleteName || !date || !startTime) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
-      const booking = {
-        coach,
-        athleteName,
-        date,
-        startTime,
-        notes,
-      };
+    const booking = {
+      coach,
+      athleteName,
+      date,
+      startTime,
+      notes,
+    };
 
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/bookings`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include", // important for session cookie
-          body: JSON.stringify(booking),
-        });
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/bookings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(booking),
+      });
 
-        if (!res.ok) throw new Error("Failed to create booking");
+      if (!res.ok) throw new Error("Failed to create booking");
 
-        alert("Booking added successfully!");
+      alert("Booking added successfully!");
+      closeModal();
+      e.target.reset();
 
-        closeModal();
-        e.target.reset();
-
-        loadCalendar();
-      } catch (err) {
-        alert("Error adding booking" + err);
-      }
-    });
+      loadCalendar();
+    } catch (err) {
+      console.error("❌ Error adding booking:", err);
+      alert("Error adding booking: " + err);
+    }
+  });
 
   document.getElementById("delete-booking-btn").addEventListener("click", async () => {
     if (!currentBookingId) {
+      console.warn("⚠️ No booking selected to delete");
       return;
     }
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/bookings/${currentBookingId}`, {
         method: "DELETE",
         credentials: "include",
       });
+
       if (!res.ok) throw new Error("Failed to delete booking");
 
       alert("Booking deleted successfully!");
@@ -233,7 +235,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       loadCalendar();
     } catch (err) {
-      alert("Error deleting booking" + err);
+      console.error("❌ Error deleting booking:", err);
+      alert("Error deleting booking: " + err);
     }
   });
 });

@@ -2,7 +2,9 @@ const sportNames = {
   baseball: "Baseball",
   girlsSoccer: "Girls Soccer",
   football: "Football",
-  boysLax: "Boys Lacrosse"
+  boysLax: "Boys Lacrosse",
+  softball: "Softball",
+  basketball: "Basketball",
 };
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -8,7 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 
-import bookingRoutes from "./routes/bookings.js";
+import bookingRoutes from "./routes/bookings.js"; // adjust path as needed
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,14 +33,15 @@ app.use(cors({
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+    console.log(`❌ CORS - Origin NOT allowed: ${origin}`);
     callback(new Error("CORS policy: Origin not allowed"));
   },
   credentials: true,
 }));
 
-
 const isProduction = process.env.NODE_ENV === "production";
 app.set("trust proxy", 1);
+
 // Sessions
 app.use(session({
   secret: process.env.SESSION_SECRET || "defaultsecret",
@@ -48,8 +49,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax", 
+    secure: isProduction, // true in production, false locally
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 1000 * 60 * 60,
   },
 }));
@@ -59,14 +60,19 @@ app.use(express.json());
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {})
-  .catch(() => {});
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
 
 // Auth middleware
 function checkAuth(req, res, next) {
-  if (req.session) {
-    next();
+  if (req.session && req.session.isAdmin) {
+    return next();
   } else {
+    console.log("❌ Unauthorized session");
     res.status(401).json({ message: "Unauthorized" });
   }
 }
@@ -78,11 +84,12 @@ app.post("/api/admin/login", (req, res) => {
     req.session.isAdmin = true;
     res.json({ message: "Login successful" });
   } else {
+    console.log("❌ Invalid password attempt");
     res.status(401).json({ message: "Invalid password" });
   }
 });
 
-// Routes
+// Use booking routes protected by auth middleware
 app.use("/api/bookings", checkAuth, bookingRoutes);
 
 // Static files
@@ -94,5 +101,5 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log("🚀 Server running on port " + PORT);
 });
