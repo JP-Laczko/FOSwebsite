@@ -739,10 +739,13 @@ body {
     padding: 2rem;
     border-radius: 30px;
     backdrop-filter: blur(20px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto; 
   }
   
   .contact-item {
@@ -1277,11 +1280,6 @@ body {
     padding: 1rem;
   }
 
-  .contact-section {
-    width: 90vw;
-    padding: 1rem;
-  }
-
   #coach-container {
     grid-template-columns: 1fr;
     padding: 0;
@@ -1339,6 +1337,31 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+
+  .contact-wrapper {
+      width: 90%;
+      margin-right: 0;
+      padding: 1.5rem 1rem;
+  }
+
+  .contact-section {
+    padding: .5rem;
+    border-radius: 20px;
+    gap: 1rem;
+    /* margin-left: -1rem; */
+    /* margin-right: 3rem; */
+  }
+
+  .contact-item {
+    font-size: 0.95rem;
+    word-break: break-word;
+  }
+
+  .contact-link {
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+    word-break: break-all;
   }
   
 }
