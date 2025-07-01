@@ -28,11 +28,9 @@ const allowedOrigins = [
 app.use(cors({
   origin: function(origin, callback) {
     if (!origin) {
-      console.log("⚠️ CORS - No origin header in request");
       return callback(null, true);
     }
     if (allowedOrigins.includes(origin)) {
-      console.log(`✅ CORS - Allowed origin: ${origin}`);
       return callback(null, true);
     }
     console.log(`❌ CORS - Origin NOT allowed: ${origin}`);
@@ -71,9 +69,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Auth middleware
 function checkAuth(req, res, next) {
-  console.log("🔐 Checking auth for", req.originalUrl);
   if (req.session && req.session.isAdmin) {
-    console.log("✅ Authenticated session");
     return next();
   } else {
     console.log("❌ Unauthorized session");
@@ -83,11 +79,9 @@ function checkAuth(req, res, next) {
 
 // Admin login route
 app.post("/api/admin/login", (req, res) => {
-  console.log("➡️ POST /api/admin/login triggered");
   const { password } = req.body;
   if (password === process.env.ADMIN_PASSWORD) {
     req.session.isAdmin = true;
-    console.log("✅ Login successful, session updated:", req.session);
     res.json({ message: "Login successful" });
   } else {
     console.log("❌ Invalid password attempt");

@@ -270,7 +270,7 @@ body {
     align-items: center; 
     justify-content: center;
     min-height: 300px;
-    padding: 4rem 2rem;
+    padding: 1rem;
     background: linear-gradient(to right, #f9e2d7, #8cd8f6);
     color: #003366;
     text-align: center; 
@@ -289,12 +289,47 @@ body {
     border-radius: 0;
     backdrop-filter: blur(6px);
   }
+
+  .hero-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 2;
+    max-width: 1200px;
+    width: 100%;
+    padding: 2rem;
+    flex-direction: row;
+  }
+  
+  .hero-image {
+    flex: 1; 
+    max-width: 30%; 
+    min-width: 200px;
+    margin-left: 1rem;
+    margin-right: 4rem;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hero-image img {
+    width: 100%;
+    min-width: 250px;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+    display: block;
+  }
   
   .hero-text {
+    margin-right: 1rem;
+    margin-left: 1rem;
     position: relative;
     z-index: 2;
-    max-width: 1000px;
     animation: fadeSlideUp 1.5s ease-out both;
+    flex: 4;
   }
 
   @keyframes fadeSlideUp {
@@ -310,6 +345,7 @@ body {
   
   .hero-section h1 {
     font-size: 2.8rem;
+    margin-top: -1rem;
     margin-bottom: 1.5rem;
     font-weight: 700;
   }
@@ -533,6 +569,27 @@ body {
   transition: background-color 0.3s ease;
 }
 
+.coach-instruction-wrapper {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.coach-instruction {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #003366;
+  background-color: #e0f0ff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.15);
+  animation: popIn 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
 .coach-card .click-hint {
   position: absolute;
   top: 60%;
@@ -641,6 +698,83 @@ body {
     padding: 0 1rem;
     display: flex;
     justify-content: center;
+  }
+
+  .info-section a {
+    color: #1776ba;
+    text-decoration: underline;
+    word-break: break-word; 
+  }  
+
+  .main-contact {
+    padding: 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .contact-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .contact-heading {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    animation: fadeSlideUp 1.5s ease-out both;
+  }
+  
+  .contact-subtext {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  
+  .contact-section {
+    background-color: transparent;
+    padding: 2rem;
+    border-radius: 30px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .contact-item {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+  
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 0.25rem;
+    color: #1776ba;
+    text-decoration: underline;
+  }
+  
+  .contact-link svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    fill: #ffffff; 
+    display: inline-block;
+    visibility: visible;
+    overflow: visible;
+  }
+
+  .contact-link.stacked {
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
   
   .info-block.pricing-contact {
@@ -890,25 +1024,13 @@ body {
     font-weight: bold;
   }
   
-  .contact-section {
-    width: 90vw;
-    text-align: center;
-    max-width: 800px;
-    margin: 3rem auto;
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  }
-  
   .contact-section h2 {
     text-align: center;
     color: #0077cc;
     margin-bottom: 0.5rem;
   }
-  
+
   .contact-section p {
-    text-align: center;
     font-size: 1.1rem;
     margin-bottom: 2rem; 
   }
@@ -1179,6 +1301,14 @@ body {
     align-items: center;
   }
 
+  .info-section a {
+    max-width: 90vw;
+    padding: 0 1.5rem;
+    overflow-x: visible;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .hide-on-sidebar {
     display: none;
   }
@@ -1203,6 +1333,12 @@ body {
 
   .about-me-image {
     margin-bottom: 1rem;
+  }
+
+  .hero-wrapper {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
   
 }

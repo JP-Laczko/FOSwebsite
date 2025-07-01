@@ -26,8 +26,25 @@ const sportServices = {
     { title: "Stick Handling", image: "Images/BLStick.jpeg" },
     { title: "Shooting Drills", image: "Images/BLShooting.jpeg" },
     { title: "Defensive Strategies", image: "Images/BLDefensive.jpeg" },
+  ],
+  basketball: [
+    { title: "Shooting Technique", image: "Images/BBBShootingMachanics.jpeg" },
+    { title: "Ball Handling", image: "Images/BBBBallHandling.jpeg" },
+    { title: "Defensive Fundamentals", image: "Images/BBBDefensiveDrills.jpeg" },
   ]
 };
+
+const performanceLabels = [
+  "Career Pitching Stats",
+  "Career Hitting Stats",
+  "HS Career Batting Stats",
+  "College Career Stats",
+  "HS Career Stats",
+  "College Career Pitching Stats",
+  "HS Career Pitching Stats",
+  "HS Hitting Stats",
+];
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.querySelector(".sidebar");
@@ -38,7 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const dayDropdown = document.getElementById("day-select");
   const sportSelectSidebar = document.getElementById("sport-select-sidebar");
   const sportSelectMain = document.getElementById("sport-select-main");
-  
+  const coachInstruction = document.createElement('p');
+  coachInstruction.className = 'coach-instruction';
+  coachInstruction.textContent = 'Click on player cards to view their schedule';
+
   // Populate time dropdowns
   const startSelect = document.getElementById('start-select');
   for (let h = 6; h <= 22; h++) {
@@ -152,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Build the coach cards
   function renderCoaches(list) {
     container.innerHTML = "";
+
     list.forEach(coach => {
       const card = document.createElement("div");
       card.className = "coach-card";
@@ -204,17 +225,28 @@ document.addEventListener("DOMContentLoaded", () => {
   function hideSportSections() {
     document.getElementById("services-section")?.classList.add("hidden");
     document.getElementById("pricing-contact")?.classList.add("hidden");
+    document.getElementById("coach-section")?.classList.add("hidden");
 
     const coachSection = document.getElementById('coach-section');
-    coachSection?.classList.remove('has-padding'); // remove padding when hidden
+    coachSection?.classList.remove('has-padding'); 
+
+    const instruction = document.querySelector('.coach-instruction');
+  if (instruction) instruction.remove();
+   
   }
   
   function showSportSections() {
     document.getElementById("services-section")?.classList.remove("hidden");
     document.getElementById("pricing-contact")?.classList.remove("hidden");
+    document.getElementById("coach-section")?.classList.remove("hidden");
 
     const coachSection = document.getElementById('coach-section');
-    coachSection?.classList.add('has-padding'); // add padding when shown
+    coachSection?.classList.add('has-padding'); 
+
+    if (!document.querySelector('.coach-instruction')) {
+      const coachWrapper = coachSection.querySelector('.coach-wrapper');
+      coachSection.insertBefore(coachInstruction, coachWrapper);
+    }
   }
   
   // Show coach bio + schedule in a modal
@@ -231,12 +263,14 @@ document.addEventListener("DOMContentLoaded", () => {
       <h2>${coach.name}</h2>
     `;
 
-    if (coach.bio?.performance?.hitting) {
-      html += `<p><strong>Hitting:</strong> ${coach.bio.performance.hitting}</p>`;
-    }
-    if (coach.bio?.performance?.pitching) {
-      html += `<p><strong>Pitching:</strong> ${coach.bio.performance.pitching}</p>`;
-    }
+    if (coach.bio?.performance) {
+      const performance = coach.bio.performance;
+      performanceLabels.forEach(label => {
+        if (performance[label]) {
+          html += `<p><strong>${label}:</strong> ${performance[label]}</p>`;
+        }
+      });
+    }    
 
     html += `
       <p>${coach.bio?.text || ""}</p>

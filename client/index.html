@@ -37,6 +37,7 @@
         <option value="girlsSoccer">Girls Soccer</option>
         <option value="football">Football</option>
         <option value="boysLax">Boys Lacrosse</option>
+        <option value="basketball">Basketball</option>
       </select>
 
       <select id="day-select">
@@ -72,13 +73,14 @@
           <option value="girlsSoccer">Girls Soccer</option>
           <option value="football">Football</option>
           <option value="boysLax">Boys Lacrosse</option>
+          <option value="basketball">Basketball</option>
         </select>
 
         <button class="menu-btn secondary-menu-btn" aria-label="Open Sidebar Menu">Check Coach Availability</button>
       </div>
     </section>
 
-    <div id="coach-section" class="hidden">
+    <div id="coach-section" class="hidden">  
       <div class="coach-wrapper">
         <div id="coach-container"></div>
       </div>
@@ -90,7 +92,10 @@
   </div>  
 
   <header class="hero-section">
-
+    <div class="hero-wrapper">
+      <div class="hero-image">
+        <img src="Images/HeroSection.jpeg" alt="FOS Sports Academy" />
+      </div>
     <div class="hero-text">
       <h1>What Are We About?</h1>
       <blockquote>
@@ -99,6 +104,7 @@
       </p>
       <footer>- FOS Founder/CEO, Michael Ferry</footer>
     </blockquote>
+    </div>
     </div>
   </header>
 
@@ -120,8 +126,7 @@
         <footer>— Ben T., Baseball Player</footer>
       </blockquote>
     </div>
-  </section>
-
+  
     <section class="info-section">
       <div class="info-block pricing-contact">
         <h2>Our Pricing</h2>
@@ -130,14 +135,26 @@
         <hr />
         <p><strong>Phone:</strong> 908-645-4602</p>
         <p><strong>Email:</strong> 
-          <a href="mailto:fillourshoessportsacademy@gmail.com">
+          <a href="mailto:fillourshoessportsacademy@gmail.com" class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 6px;">
+              <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 2v.01L12 13 4 6.01V6h16zM4 18V8l8 5 8-5v10H4z"/>
+            </svg>
             fillourshoessportsacademy@gmail.com
-          </a><br>
-          (If the link doesn’t open your email app, copy and paste it manually)
+          </a>
         </p>
-        
+        <div>
+          <p><strong>Instagram:</strong> 
+        </div>
+          <a href="https://www.instagram.com/fossportsacademy/" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 6px;">
+              <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 2A3.75 3.75 0 004 7.75v8.5A3.75 3.75 0 007.75 20h8.5a3.75 3.75 0 003.75-3.75v-8.5A3.75 3.75 0 0016.25 4h-8.5zm8.75 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z"/>
+            </svg>
+            FosSportsAcademy
+          </a>
+        </p>
       </div>
-    </section>
+    </section>      
+
   </main>
 
   <div id="bio-modal" class="modal hidden">

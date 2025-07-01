@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
       ? "http://127.0.0.1:4000"
       : "https://fossportsacademy.com";
 
-  console.log("🚀 API_BASE_URL set to:", API_BASE_URL);
-
   const sportNames = {
     baseball: "Baseball",
     girlsSoccer: "Girls Soccer",
@@ -23,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
 
     const password = passwordInput.value;
-    console.log("🔐 Login submit triggered");
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
@@ -32,8 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
         credentials: "include",
         body: JSON.stringify({ password }),
       });
-
-      console.log("🔄 Login response status:", res.status);
 
       if (res.ok) {
         loginForm.classList.add("hidden");
@@ -63,7 +58,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadCalendar() {
     const calendarEl = document.getElementById("calendar");
-    console.log("📅 Loading calendar...");
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
@@ -72,7 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
         openModal(info.dateStr);
       },
       events: async function (fetchInfo, successCallback, failureCallback) {
-        console.log("📡 Fetching bookings for calendar...");
 
         try {
           const res = await fetch(`${API_BASE_URL}/api/bookings`, {
@@ -81,14 +74,11 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { "Content-Type": "application/json" },
           });
 
-          console.log("📡 Bookings fetch response status:", res.status);
-
           if (!res.ok) {
             throw new Error("Network response was not ok");
           }
 
           const data = await res.json();
-          console.log(`📅 Loaded ${data.length} bookings`);
 
           const events = data
             .map((booking) => {
@@ -145,20 +135,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function openModal(dateStr) {
-    console.log("📝 Opening booking modal for date:", dateStr);
     const modal = document.getElementById("booking-modal");
     modal.classList.remove("hidden");
     document.getElementById("bookingDate").value = dateStr;
   }
 
   function closeModal() {
-    console.log("❌ Closing booking modal");
     const modal = document.getElementById("booking-modal");
     modal.classList.add("hidden");
   }
 
   function loadCoaches() {
-    console.log("🔄 Loading coaches list...");
     const coachSelect = document.getElementById("admin-coach-select");
 
     fetch(
@@ -166,7 +153,6 @@ document.addEventListener("DOMContentLoaded", function () {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(`✅ Loaded ${data.length} coaches`);
         const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
         coachSelect.innerHTML = '<option value="">Select a coach</option>';
 
@@ -208,8 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
       notes,
     };
 
-    console.log("📤 Creating booking:", booking);
-
     try {
       const res = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
@@ -217,8 +201,6 @@ document.addEventListener("DOMContentLoaded", function () {
         credentials: "include",
         body: JSON.stringify(booking),
       });
-
-      console.log("📤 Booking creation response status:", res.status);
 
       if (!res.ok) throw new Error("Failed to create booking");
 
@@ -238,15 +220,12 @@ document.addEventListener("DOMContentLoaded", function () {
       console.warn("⚠️ No booking selected to delete");
       return;
     }
-    console.log("🗑️ Deleting booking with id:", currentBookingId);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/bookings/${currentBookingId}`, {
         method: "DELETE",
         credentials: "include",
       });
-
-      console.log("🗑️ Delete booking response status:", res.status);
 
       if (!res.ok) throw new Error("Failed to delete booking");
 
