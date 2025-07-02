@@ -53,4 +53,25 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
+// GET bookings for a specific coach within a date range
+router.get("/:coach", async (req, res) => {
+  const { coach } = req.params;
+  const { start, end } = req.query;
+
+  try {
+    const bookings = await Booking.find({
+      coach,
+      date: {
+        $gte: new Date(start),
+        $lte: new Date(end)
+      }
+    });
+
+    res.json(bookings);
+  } catch (err) {
+    console.error("Error fetching bookings:", err);
+    res.status(500).json({ message: "Failed to fetch bookings" });
+  }
+});
+
 export default router;
