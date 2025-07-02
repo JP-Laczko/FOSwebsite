@@ -198,18 +198,24 @@ document.addEventListener("DOMContentLoaded", () => {
             <p><strong>Achievement:</strong> ${coach.achievement}</p>
            <span class="click-hint">Click on my card!</span>
           </div>
-          <a class="schedule-btn" href="schedule.html?coach=${encodeURIComponent(coach.name)}">
-            Schedule Lesson
-          </a>
+          <button class="schedule-btn">
+            View Availability
+          </button>
         </div>
       `;
 
       // Open bio modal when clicking anywhere except the button
-      card.addEventListener("click", e => showBioModal(coach, e));
+      card.addEventListener("click", e => {
+        if (e.target.closest(".schedule-btn")) return;
+        showBioModal(coach, e);
+      });
 
       // Prevent card click from blocking the link
       card.querySelector(".schedule-btn")
-          .addEventListener("click", e => e.stopPropagation());
+          .addEventListener("click", e => {
+            e.stopPropagation()
+            showBioModal(coach, e);
+          });
 
       container.appendChild(card);
     });
@@ -267,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Show coach bio + schedule in a modal
   async function showBioModal(coach, e) {
-    if (e.target.closest(".schedule-btn")) return;
 
     const now = new Date();
     const startHour = 10;  
@@ -276,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     // Generate array of days from today
     let days = [];
-    for (let d = 0; d < daysToShow; d++) {
+    for (let d = 1; d <= daysToShow; d++) {
       const dayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d);
       days.push(dayDate);
     }
@@ -411,6 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add click listener to all available slots
     modalContent.querySelectorAll("td.available").forEach(cell => {
       cell.addEventListener("click", () => {
+        console.log("cliked");
         const selectedDate = cell.getAttribute("data-date");
         const selectedHour = cell.getAttribute("data-hour");
         const selectedMinute = cell.getAttribute("data-minute");
@@ -446,6 +452,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // Listen to filters
   dayDropdown.addEventListener("change", filterAndRender);
   startSelect.addEventListener("change", filterAndRender);
+
+  const autoCoach = sessionStorage.getItem("openCoachModal");
+  const autoSport = sessionStorage.getItem("openSport");
+
+  if (autoCoach && autoSport) {
+    sessionStorage.removeItem("openCoachModal");
+    sessionStorage.removeItem("openSport");
+
+    document.getElementById("sport-select-main").value = autoSport;
+    selectedSport = autoSport;
+    showSportSections();
+    filterAndRender();
+
+    // Delay to ensure coaches render before finding match
+    setTimeout(() => {
+      const match = coaches.find(c => c.name === autoCoach);
+      if (match) showBioModal(match, { target: {} });
+    }, 200);
+  }
 
   // Load data and kick off
   fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")

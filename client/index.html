@@ -164,16 +164,5 @@
   </div>
 
   <script src="script.js"></script>
-  <script>
-  // Open sidebar automatically if flag is set from schedule.html
-    if (sessionStorage.getItem("openSidebar") === "true") {
-      document.querySelector(".sidebar").classList.add("open");
-      sessionStorage.removeItem("openSidebar"); 
-
-      document.querySelector(".menu-btn.secondary-menu-btn")
-        .classList.add("hide-on-sidebar");
-     
-    }
-    </script>
 </body>
 </html>

@@ -25,6 +25,28 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post('/check', async (req, res) => {
+  const { coach, datetime } = req.body;
+
+  try {
+    const bookingTime = new Date(datetime);
+
+    const conflict = await Booking.findOne({
+      coach,
+      date: bookingTime.toISOString()
+    });
+
+    if (conflict) {
+      return res.json({ available: false });
+    }
+
+    return res.json({ available: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
 // DELETE a booking
 router.delete("/:id", async (req, res) => {
   try {
