@@ -615,7 +615,7 @@ body {
 .card-overlay p {
   color: white;
   font-weight: 400;
-  font-size: 0.95rem;
+  font-size: 0.72rem;
   margin: 0.5rem 0;
   text-shadow: 1px 1px 4px rgba(0,0,0,1);
 }
@@ -668,6 +668,28 @@ body {
 
 .coach-card:hover .click-hint {
   opacity: 1;
+}
+
+.schedule-btn {
+  display: inline-block; 
+  width: 80%;
+  max-width: 150px;
+  margin: 0.5rem auto;
+  background-color: #1a73e8;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border: none;
+  border-radius: 0.7rem;
+  font-size: 0.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.schedule-btn:hover {
+  background-color: #155ab6;
 }
 
 .no-results {
@@ -1328,6 +1350,13 @@ body {
 
   .card-overlay p {
     font-size: 0.9rem;
+  }
+
+  .schedule-btn {
+    width: 80%;
+    font-size: 0.5rem;
+    padding: 0.6rem 1rem;
+    margin: 1rem auto;
   }
 
   .services-container {
