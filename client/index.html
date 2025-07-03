@@ -37,7 +37,7 @@
         <option value="girlsSoccer">Girls Soccer</option>
         <option value="football">Football</option>
         <option value="boysLax">Boys Lacrosse</option>
-        <option value="basketball">Basketball</option>
+        <option value="boysBasketball">Basketball</option>
       </select>
 
       <select id="day-select">
@@ -73,7 +73,7 @@
           <option value="girlsSoccer">Girls Soccer</option>
           <option value="football">Football</option>
           <option value="boysLax">Boys Lacrosse</option>
-          <option value="basketball">Basketball</option>
+          <option value="boysBasketball">Basketball</option>
         </select>
 
         <button class="menu-btn secondary-menu-btn" aria-label="Open Sidebar Menu">Check Coach Availability</button>
@@ -164,16 +164,5 @@
   </div>
 
   <script src="script.js"></script>
-  <script>
-  // Open sidebar automatically if flag is set from schedule.html
-    if (sessionStorage.getItem("openSidebar") === "true") {
-      document.querySelector(".sidebar").classList.add("open");
-      sessionStorage.removeItem("openSidebar"); 
-
-      document.querySelector(".menu-btn.secondary-menu-btn")
-        .classList.add("hide-on-sidebar");
-     
-    }
-    </script>
 </body>
 </html>

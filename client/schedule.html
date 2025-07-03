@@ -41,10 +41,10 @@
         <input type="user_phone" name="user_phone" id="user_phone" required />
 
         <label for="coach">Choose Coach:</label>
-        <button type="button" id="go-to-filters-btn" class="secondary-menu-btn">Check Coach Availability</button>
         <select name="coach" id="coach" required>
           <option value="">Loading coaches...</option>
         </select>
+        <button id="check-schedule-btn" type=button disabled>Please Select A Coach</button>
 
         <label for="date">Date (Please allow 2 business days):</label>
         <input type="date" name="date" id="date" required />
@@ -63,10 +63,21 @@
 
   <script src="schedule.js"></script>
   <script>
-    document.getElementById("go-to-filters-btn").addEventListener("click", () => {
-      sessionStorage.setItem("openSidebar", "true");
-      window.location.href = "index.html";
-    });
+    document.addEventListener("DOMContentLoaded", () => {
+    // Prefill form from sessionStorage
+    const coach = sessionStorage.getItem("selectedCoach");
+    const date = sessionStorage.getItem("selectedDate");
+    const hour = sessionStorage.getItem("selectedHour");
+    const minute = sessionStorage.getItem("selectedMinute");
+
+    if (coach) document.getElementById("coach").value = coach;
+    if (date) document.getElementById("date").value = date;
+
+    if (hour && minute) {
+      const formattedTime = `${hour.padStart(2, "0")}:${minute.padStart(2, "0")}`;
+      document.getElementById("time").value = formattedTime;
+    }
+  });
   </script>
   
 </body>

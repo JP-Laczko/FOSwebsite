@@ -35,6 +35,30 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post('/check', async (req, res) => {
+  const { coach, datetime } = req.body;
+
+  try {
+    const bookingTime = new Date(datetime);
+
+    const conflict = await Booking.findOne({
+      coach,
+      date: bookingTime.toISOString()
+    });
+
+    if (conflict) {
+      return res.json({ available: false });
+    }
+
+    return res.json({ available: true });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+// DELETE a booking
+>>>>>>> dev
 router.delete("/:id", async (req, res) => {
   try {
     console.log(`➡️ DELETE /api/bookings/${req.params.id} triggered`);
@@ -69,6 +93,27 @@ router.patch("/:id", async (req, res) => {
   } catch (err) {
     console.error("Error updating booking:", err);
     res.status(400).json({ message: err.message });
+  }
+});
+
+// GET bookings for a specific coach within a date range
+router.get("/:coach", async (req, res) => {
+  const { coach } = req.params;
+  const { start, end } = req.query;
+
+  try {
+    const bookings = await Booking.find({
+      coach,
+      date: {
+        $gte: new Date(start),
+        $lte: new Date(end)
+      }
+    });
+
+    res.json(bookings);
+  } catch (err) {
+    console.error("Error fetching bookings:", err);
+    res.status(500).json({ message: "Failed to fetch bookings" });
   }
 });
 

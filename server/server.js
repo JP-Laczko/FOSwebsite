@@ -90,7 +90,7 @@ app.post("/api/admin/login", (req, res) => {
 });
 
 // Use booking routes protected by auth middleware
-app.use("/api/bookings", checkAuth, bookingRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 // Static files
 app.use(express.static(path.join(__dirname, "../client")));

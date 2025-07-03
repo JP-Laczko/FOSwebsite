@@ -210,29 +210,104 @@ body {
     min-width: 120px;
   }
 
-/* Schedule Table inside Modal */
-.schedule-table {
-  width: 100%;
-  margin-top: 1rem;
-  border-collapse: collapse;
-  font-size: 0.95rem;
+  .modal-content {
+    max-height: 70vh;
+    max-width: 90vw;
+    overflow: auto;
+    padding: 20px;
+    background: #fff; /* keep top area light */
+    color: #000;
+  }
+  
+  /* Wrap just the calendar in a container with dark bg */
+  .schedule-container {
+    background-color: #222;
+    color: #fff;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 6px;
+    overflow: auto;
+  }
+  
+  .schedule-table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 0.75rem;
+  }
+  
+  .schedule-table th,
+  .schedule-table td {
+    border: 1px solid #555;
+    padding: 8px 4px; /* taller padding */
+    text-align: center;
+    user-select: none;
+    vertical-align: middle;
+    height: 30px; /* taller rows */
+    min-width: 30px; /* narrower columns */
+    max-width: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* Header row for days */
+.schedule-table thead th:not(:first-child) {
+  min-width: 90px;
+  max-width: 110px;
+  height: 30px; 
+  white-space: normal;
+  font-size: 0.85rem;
+  vertical-align: bottom;
+  color: #fff;
 }
 
-.schedule-table th,
-.schedule-table td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: center;
+/* Time column header */
+.schedule-table th:first-child {
+  width: 70px;
+  white-space: nowrap;
+  font-weight: 600;
+  color: #222;
+  background-color: #eee;
+  text-align: right;
+  padding-right: 10px;
 }
-
-.schedule-table th {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.schedule-table td {
-  background-color: #fff;
-}
+  
+  .schedule-table th:first-child,
+  .schedule-table td:first-child {
+    /* Time column wider so times show nicely */
+    min-width: 60px;
+    max-width: 70px;
+    font-weight: 600;
+    color: #222;
+    background-color: #eee;
+    text-align: right;
+    padding-right: 10px;
+  }
+  
+  .schedule-table th {
+    background-color: #333;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  
+  .schedule-table td.available {
+    background-color: #28a745;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  .schedule-table td.unavailable {
+    background-color: #dc3545;
+    color: #aaa;
+    cursor: default;
+  }
+  
+  .schedule-table td:hover.available {
+    background-color: #218838;
+  }
+  
   
   .day-buttons button:hover {
     background-color: #005fa3;
@@ -523,7 +598,8 @@ body {
   color: #1776ba;
   font-size: 1.2rem;
   font-weight: 800;
-  margin-top: 3rem;
+  margin-top: 0.5rem;
+  margin-bottom: 12rem;
   text-shadow:
     -1px -1px 0 #fff,
      1px -1px 0 #fff,
@@ -535,11 +611,13 @@ body {
      0   -1px 0 #fff,
      1px  1px 4px rgba(0, 0, 0, 0.6);
 }
+
 .card-overlay p {
   color: white;
-  font-weight: 350;
-  margin: 0.3rem 0;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  font-weight: 400;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+  text-shadow: 1px 1px 4px rgba(0,0,0,1);
 }
 
 .coach-card:hover {
@@ -548,25 +626,8 @@ body {
   cursor: pointer;
 }
 
-/* Schedule button */
-.schedule-btn {
-  background-color: #0077cc;
-  color: white;
-  padding: 0 8px;              
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  line-height: 20px;            
-  box-sizing: border-box;
-  width: auto;
-  text-decoration: none;
-  align-self: center;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
+#coach {
+  margin-bottom: 0.1rem;
 }
 
 .coach-instruction-wrapper {
@@ -607,10 +668,6 @@ body {
 
 .coach-card:hover .click-hint {
   opacity: 1;
-}
-
-.schedule-btn:hover {
-  background-color: #1927ef;
 }
 
 .no-results {
@@ -861,7 +918,6 @@ body {
     text-decoration: underline;
   }
   
-  
   .modal {
     position: fixed;
     top: 50%;
@@ -871,7 +927,7 @@ body {
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
+    max-width: 70vw;
     width: 90%;
     z-index: 2000;
   }
@@ -928,19 +984,25 @@ body {
   
   .modal .close-btn {
     position: absolute;
-    top: 12px;
-    right: 16px;
-    font-size: 1.5rem;
-    background: none;
+    top: -5px;
+    right: -5px;
+    font-size: 45px;
+    font-weight: bold;
+    color: #000000;
+    background: transparent;
     border: none;
     cursor: pointer;
-    color: #aaa;
-    transition: color 0.3s ease;
+    z-index: 1001;
+    padding: 4px 10px;
+    line-height: 1;
+    transition: transform 0.2s ease;
   }
   
   .modal .close-btn:hover {
-    color: #333;
+    transform: scale(1.2);
+    color: #ff4d4d;
   }
+  
 
   .hidden {
     display: none;
@@ -1177,6 +1239,29 @@ body {
     padding: 1rem;
   }
 
+  .calendar-grid {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 1em;
+  }
+  
+  .calendar-grid th, .calendar-grid td {
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 4px;
+    font-size: 0.8rem;
+  }
+  
+  .slot.available {
+    background-color: #b3e6b3; /* light green */
+  }
+  
+  .slot.unavailable {
+    background-color: #f2b8b5; /* light red */
+    color: #666;
+  }
+  
+
   /* --- MOBILE OPTIMIZATIONS --- */
 @media (max-width: 768px) {
   
@@ -1360,6 +1445,30 @@ body {
     flex-wrap: wrap;
     font-size: 0.95rem;
     word-break: break-all;
+  }
+
+  .calendar-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .schedule-table {
+    min-width: 600px;
+    border-collapse: collapse;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .modal-content {
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
   }
   
 }
