@@ -198,24 +198,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <p><strong>Achievement:</strong> ${coach.achievement}</p>
            <span class="click-hint">Click on my card!</span>
           </div>
-          <button class="schedule-btn">
-            View Availability
-          </button>
         </div>
       `;
 
       // Open bio modal when clicking anywhere except the button
       card.addEventListener("click", e => {
-        if (e.target.closest(".schedule-btn")) return;
         showBioModal(coach, e);
       });
-
-      // Prevent card click from blocking the link
-      card.querySelector(".schedule-btn")
-          .addEventListener("click", e => {
-            e.stopPropagation()
-            showBioModal(coach, e);
-          });
 
       container.appendChild(card);
     });
