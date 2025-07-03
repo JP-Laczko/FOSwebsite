@@ -191,12 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       card.innerHTML = `
         <div class="card-overlay">
-          <div class="card-info">
+          <div class="card-title">
             <h3>${coach.name}</h3>
+          </div>
+          <div class="card-info">
             <p><strong>Position:</strong> ${coach.position}</p>
             <p><strong>School:</strong> ${coach.school}</p>
             <p><strong>Achievement:</strong> ${coach.achievement}</p>
-           <span class="click-hint">Click on my card!</span>
+            <span class="click-hint">Click on my card!</span>
           </div>
         </div>
       `;
