@@ -377,6 +377,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
     tableHtml += "</tbody></table>";
+    // Wrap in scrollable div for mobile
+    const scrollWrapper = `<div class="calendar-scroll">${tableHtml}</div>`;
+    modalContent.innerHTML = scrollWrapper;
   
     // Build the rest of the modal content
     let html = `

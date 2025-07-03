@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     girlsSoccer: "Girls Soccer",
     football: "Football",
     boysLax: "Boys Lacrosse",
-    basketball: "Basketball",
+    boysBasketball: "Boys Basketball",
     softball: "Softball",
   };
 

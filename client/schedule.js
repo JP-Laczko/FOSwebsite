@@ -4,7 +4,7 @@ const sportNames = {
   football: "Football",
   boysLax: "Boys Lacrosse",
   softball: "Softball",
-  basketball: "Basketball",
+  boysBasketball: "Boys Basketball",
 };
 
 const API_BASE_URL =

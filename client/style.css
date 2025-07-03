@@ -598,7 +598,8 @@ body {
   color: #1776ba;
   font-size: 1.2rem;
   font-weight: 800;
-  margin-top: 3rem;
+  margin-top: 0.5rem;
+  margin-bottom: 12rem;
   text-shadow:
     -1px -1px 0 #fff,
      1px -1px 0 #fff,
@@ -610,38 +611,19 @@ body {
      0   -1px 0 #fff,
      1px  1px 4px rgba(0, 0, 0, 0.6);
 }
+
 .card-overlay p {
   color: white;
-  font-weight: 350;
-  margin: 0.3rem 0;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  font-weight: 400;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+  text-shadow: 1px 1px 4px rgba(0,0,0,1);
 }
 
 .coach-card:hover {
   transform: scale(1.03);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-}
-
-/* Schedule button */
-.schedule-btn {
-  background-color: #0077cc;
-  color: white;
-  padding: 0 8px;              
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  line-height: 20px;            
-  box-sizing: border-box;
-  width: auto;
-  text-decoration: none;
-  align-self: center;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
 }
 
 #coach {
@@ -686,10 +668,6 @@ body {
 
 .coach-card:hover .click-hint {
   opacity: 1;
-}
-
-.schedule-btn:hover {
-  background-color: #1927ef;
 }
 
 .no-results {
@@ -1467,6 +1445,30 @@ body {
     flex-wrap: wrap;
     font-size: 0.95rem;
     word-break: break-all;
+  }
+
+  .calendar-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .schedule-table {
+    min-width: 600px;
+    border-collapse: collapse;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .modal-content {
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
   }
   
 }
