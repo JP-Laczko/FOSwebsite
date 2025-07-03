@@ -58,7 +58,6 @@ router.post('/check', async (req, res) => {
 });
 
 // DELETE a booking
->>>>>>> dev
 router.delete("/:id", async (req, res) => {
   try {
     console.log(`➡️ DELETE /api/bookings/${req.params.id} triggered`);
