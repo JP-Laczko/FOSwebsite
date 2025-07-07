@@ -146,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
   
+    const guardianName = document.getElementById("guardian_name").value;
     const name = document.getElementById("user_name").value;
     const email = document.getElementById("user_email").value;
     const user_phone = document.getElementById("user_phone").value;
@@ -270,9 +271,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (result.paymentIntent.status === "succeeded") {
   
         await emailjs.send("service_b2jlk03", "template_wfpkvcf", {
-          user_name: name,
-          user_email: email,
-          user_phone: user_phone,
+          guardian_name: guardianName,
+          user_email: email,user_phone: user_phone,
           coach: coach,
           coach_email: coach_email,
           formatted_date: formattedDate,
@@ -288,6 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           body: JSON.stringify({
             coach,
+            guardianName,
             athleteName: name,
             numPlayers,
             date: rawDate.toISOString(),
@@ -298,7 +299,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
         alert("Your request was sent successfully!");
         form.reset();
-      }
+        window.location.href = "/";
+     }
     } catch (error) {
       alert("Something went wrong. Please try again.");
       console.error(error);

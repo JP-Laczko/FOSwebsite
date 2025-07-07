@@ -107,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
       hideSportSections();
     }
 
-
   // Format hour (24→12h with AM/PM)
   function formatTime(hour) {
     const h = parseInt(hour, 10);
@@ -466,7 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 200);
   }
 
-  // Load data and kick off
+  // Load data 
   fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
     .then(r => r.json())
     .then(data => {
