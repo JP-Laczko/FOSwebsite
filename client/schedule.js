@@ -7,6 +7,13 @@ const sportNames = {
   boysBasketball: "Boys Basketball",
 };
 
+const priceMap = {
+  1: 6000,
+  2: 9000,
+  3: 11900,
+  4: 14900,
+};
+
 const API_BASE_URL =
   ["localhost", "127.0.0.1"].includes(window.location.hostname)
     ? "http://127.0.0.1:4000"
@@ -33,6 +40,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const d = new Date();
     d.setHours(hour, 0, 0, 0);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function updatePriceSummary(numPlayers) {
+    if (!numPlayers || !priceMap[numPlayers]) {
+      document.getElementById("price-summary").textContent = "Base Price: —";
+      document.getElementById("processing-fee").textContent = "Processing Fee: —";
+      document.getElementById("final-total").textContent = "Final Total: —";
+      return;
+    }
+    
+    const baseAmount = priceMap[numPlayers];
+    const fee = Math.round(baseAmount * 0.029 + 30);
+    const totalAmount = baseAmount + fee;
+  
+    const formatDollars = (cents) => (cents / 100).toFixed(2);
+  
+    document.getElementById("price-summary").textContent = `Base Price: $${formatDollars(baseAmount)}`;
+    document.getElementById("processing-fee").textContent = `Processing Fee: $${formatDollars(fee)}`;
+    document.getElementById("final-total").textContent = `Final Total: $${formatDollars(totalAmount)}`;
   }
 
   checkBtn.addEventListener("click", () => {
@@ -96,6 +122,27 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("coach").value = coachName;
   }
 
+  document.getElementById("numPlayers").addEventListener("change", (e) => {
+    const num = parseInt(e.target.value, 10);
+    updatePriceSummary(num);
+  });  
+
+  // Replace with your real test publishable key
+  const stripe = Stripe("pk_live_51RhcLVFDRjshSt4o8kFidcq1p2YVMsycAVJygU8UcRyRMSS7wg5gxIUtHGVpW1fa568sCYNzxuoDuiJy8tVm7ndE004Io4IXXM"); // Publishable Key
+  const elements = stripe.elements();
+  const card = elements.create("card");
+  card.mount("#card-element");
+
+  // Error handling
+  card.on('change', (event) => {
+    const displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
   
@@ -109,7 +156,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
     const message = document.getElementById("message").value.trim();
-  
+    const numPlayers = parseInt(document.getElementById("numPlayers").value, 10);
+
+    let amount = 6000; // in cents (Stripe uses cents for USD)
+    
+    // Set price based on number of players
+    if (numPlayers === 2) amount = 9000;
+    else if (numPlayers === 3) amount = 11900;
+    else if (numPlayers === 4) amount = 14900;
+
+    let fee = Math.round(amount * 0.029 + 30); // 2.9% + 30 cents
+    let totalAmount = amount + fee;
+
     // Format date and time as ISO string or your backend expects
     const rawDate = new Date(`${date}T${time}`);
 
@@ -161,7 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Sorry, this time slot is already booked. Please choose a different time.");
         return;
       }
-
       
       const bookingHour = rawDate.getHours();
 
@@ -173,43 +230,75 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
   
-      // 2. If available, proceed to send email
       const formattedDate = rawDate.toLocaleDateString(undefined, {
         weekday: "long", year: "numeric", month: "long", day: "numeric"
       });
       const formattedTime = rawDate.toLocaleTimeString([], {
         hour: '2-digit', minute: '2-digit'
       });
-  
-      await emailjs.send("service_b2jlk03", "template_wfpkvcf", {
-        user_name: name,
-        user_email: email,
-        user_phone: user_phone,
-        coach: coach,
-        coach_email: coach_email,
-        formatted_date: formattedDate,
-        formatted_time: formattedTime,
-        message: message
+
+      // Now that the coach is avaiable, process the payment
+      const paymentRes = await fetch(`${API_BASE_URL}/api/pay/create-intent`, {        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: totalAmount })
       });
-  
-      // 3. After email success, save booking in DB 
-      await fetch("/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          coach,
-          athleteName: name,
-          date: rawDate.toISOString(),
-          startTime: time,
-          notes: message
-        })
+
+      if (!paymentRes.ok) {
+        const text = await paymentRes.text();
+        console.error("Payment request failed:", text);
+        alert("Something went wrong processing the payment.");
+        return;
+      }
+    
+      const data = await paymentRes.json();
+      const clientSecret = data.clientSecret;
+    
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: card,
+          billing_details: {
+            name: document.getElementById("name")?.value || "FOS Customer"
+          },
+        }
       });
+    
+      if (result.error) {
+        document.getElementById("card-errors").textContent = result.error.message;
+        return;
+      } 
+
+      if (result.paymentIntent.status === "succeeded") {
   
-      alert("Your request was sent successfully!");
-      form.reset();
-  
+        await emailjs.send("service_b2jlk03", "template_wfpkvcf", {
+          user_name: name,
+          user_email: email,
+          user_phone: user_phone,
+          coach: coach,
+          coach_email: coach_email,
+          formatted_date: formattedDate,
+          formatted_time: formattedTime,
+          message: message
+        });
+    
+        // 3. After email success, save booking in DB 
+        await fetch(`${API_BASE_URL}/api/bookings`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            coach,
+            athleteName: name,
+            numPlayers,
+            date: rawDate.toISOString(),
+            startTime: time,
+            notes: message
+          })
+        });
+    
+        alert("Your request was sent successfully!");
+        form.reset();
+      }
     } catch (error) {
       alert("Something went wrong. Please try again.");
       console.error(error);

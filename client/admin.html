@@ -18,7 +18,21 @@
 
   <div id="admin-dashboard" class="hidden">
     <div id="calendar"></div>
-  </div>
+  
+    <section id="lesson-counts-section">
+      <h2>Lesson Counts</h2>
+      <table id="lesson-counts-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Coach</th>
+            <th>Lessons</th>
+          </tr>
+        </thead>
+        <tbody id="lesson-counts-body"></tbody>
+      </table>
+    </section>
+  </div>  
 
   <div id="booking-modal" class="modal hidden">
     <div class="modal-content">
@@ -32,6 +46,9 @@
         <select name="coach" id="admin-coach-select" required>
           <option value="">Loading coaches...</option>
         </select>
+
+        <label for="numPlayers">Number of Players:</label>
+        <input type="number" id="numPlayers" name="numPlayers" min="1" required />
   
         <label>Time:</label>
         <input type="time" id="startTime" name="startTime" required />
@@ -55,6 +72,7 @@
       <h2>Booking Details</h2>
       <p><strong>Athlete:</strong> <span id="view-athleteName"></span></p>
       <p><strong>Coach:</strong> <span id="view-coach"></span></p>
+      <p><strong>Number of Players:</strong> <span id="view-numPlayers"></span></p>
       <p><strong>Date:</strong> <span id="view-date"></span></p>
       <p><strong>Time:</strong> <span id="view-time"></span></p>
       <p><strong>Notes:</strong> <span id="view-notes"></span></p>

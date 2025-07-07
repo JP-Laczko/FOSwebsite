@@ -8,7 +8,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 
-import bookingRoutes from "./routes/bookings.js"; // adjust path as needed
+import bookingRoutes from "./routes/bookings.js"; 
+
+import paymentRoutes from './routes/payment.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,6 +96,9 @@ app.use("/api/bookings", bookingRoutes);
 
 // Static files
 app.use(express.static(path.join(__dirname, "../client")));
+
+// Stripe payments
+app.use('/api/pay', paymentRoutes);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/index.html"));

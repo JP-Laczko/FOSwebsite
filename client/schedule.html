@@ -13,6 +13,7 @@
     emailjs.init("_1JsX137tf3uXUuFS");
   })();
 </script>
+<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     
@@ -31,7 +32,7 @@
     <section class="form-section">
       <h2>Schedule a Lesson</h2>
       <form id="schedule-form">
-        <label for="name">Your Name:</label>
+        <label for="name">Athlete's Name:</label>
         <input type="text" name="user_name" id="user_name" required />
 
         <label for="email">Your Email:</label>
@@ -76,11 +77,44 @@
             <option value="20:30">8:30 PM</option>
             <option value="21:00">9:00 PM</option>
           </select>
-        <label for="message">Please include # of players and what you would like us to work on with your child:</label>
+
+          <label for="numPlayers">Number of Players:</label>
+          <select name="numPlayers" id="numPlayers" required>
+            <option value="">Select number of players</option>
+            <option value="1">1 Player - $59.99</option>
+            <option value="2">2 Players - $89.99</option>
+          </select>
+
+        <label for="message">What you would like us to work on with your child?:</label>
         <textarea name="message" id="message" required></textarea>
 
-        <button type="submit">Submit</button>
+        <div class="payment-box">
+          <label for="card-element">Credit or debit card</label>
+          <div id="card-element"></div>
+          <div id="card-errors" role="alert"></div>
+        </div>
+        
+        <div class="trust-container">
+          <p class="secure-label">
+            <img src="https://img.icons8.com/ios-filled/24/4CAF50/lock--v1.png" alt="Secure lock" class="lock-icon" />
+            <span>Secured Payment via <strong>Stripe</strong></span>
+          </p>
+        
+          <div class="trust-row">
+            <img src="https://img.icons8.com/color/48/stripe.png" alt="Stripe" />
+            <img src="https://img.icons8.com/color/48/visa.png" alt="Visa" />
+            <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard" />
+            <img src="https://img.icons8.com/color/48/amex.png" alt="American Express" />
+          </div>
+        </div>
+
+        <p id="price-summary">Total: —</p>
+        <p id="processing-fee" class="small-text">Processing Fee: —</p>
+        <p id="final-total" class="bold-total">Final Total: —</p>
+
+        <button type="submit">Submit &amp; Pay</button>
       </form>
+
       <p id="confirmation-message" class="hidden">Your request has been sent!</p>
     </section>
   </main>

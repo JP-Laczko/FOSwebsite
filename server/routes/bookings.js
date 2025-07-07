@@ -5,11 +5,8 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    console.log("➡️ GET /api/bookings triggered");
-    console.log("Session in bookings GET:", req.session);
 
     const bookings = await Booking.find();
-    console.log(`✅ Found ${bookings.length} bookings`);
 
     res.json(bookings);
   } catch (error) {
@@ -95,17 +92,53 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
+// Group bookings by athleteEmail and count total lessons
+router.get('/lesson-counts', async (req, res) => {
+  try {
+    const counts = await Booking.aggregate([
+      {
+        $group: {
+          _id: "$coach", // group by coach name
+          totalLessons: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id",
+          totalLessons: 1
+        }
+      },
+      { $sort: { totalLessons: -1 } }
+
+    ]) 
+
+    res.json(counts);
+  
+    } catch (err) {
+      console.error("Error fetching lesson counts:", err);
+      res.status(500).json({ error: "Failed to retrieve counts" });
+    }
+});
+
 // GET bookings for a specific coach within a date range
 router.get("/:coach", async (req, res) => {
   const { coach } = req.params;
   const { start, end } = req.query;
 
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  if (isNaN(startDate) || isNaN(endDate)) {
+    return res.status(400).json({ error: "Invalid start or end date" });
+  }
+
   try {
     const bookings = await Booking.find({
       coach,
       date: {
-        $gte: new Date(start),
-        $lte: new Date(end)
+        $gte: startDate,
+        $lte: endDate
       }
     });
 

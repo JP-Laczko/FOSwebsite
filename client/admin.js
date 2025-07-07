@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const coachSelect = document.getElementById("admin-coach-select");
         loadCoaches(coachSelect);
         loadCalendar();
+        loadLessonCounts();
       } else {
         console.warn("⚠️ Login failed");
         loginError.classList.remove("hidden");
@@ -104,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   extendedProps: {
                     athleteName: booking.athleteName,
                     coach: booking.coach,
+                    numPlayers: booking.numPlayers,
                     date: dateOnly,
                     time: booking.startTime,
                     notes: booking.notes || "",
@@ -130,6 +132,8 @@ document.addEventListener("DOMContentLoaded", function () {
           event.extendedProps.athleteName || "N/A";
         document.getElementById("view-coach").textContent =
           event.extendedProps.coach || "N/A";
+        document.getElementById("view-numPlayers").textContent =
+          event.extendedProps.numPlayers || "N/A";
         document.getElementById("view-date").textContent =
           event.extendedProps.date || "N/A";
         document.getElementById("view-time").textContent =
@@ -175,10 +179,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to toggle between view and edit modes
 function toggleEditMode(isEditing) {
-  const modal = document.getElementById("view-booking-modal");
 
   const athleteNameEl = document.getElementById("view-athleteName");
   const coachEl = document.getElementById("view-coach");
+  const numPlayersEl = document.getElementById("view-numPlayers");
   const dateEl = document.getElementById("view-date");
   const timeEl = document.getElementById("view-time");
   const notesEl = document.getElementById("view-notes");
@@ -194,7 +198,8 @@ function toggleEditMode(isEditing) {
     loadCoaches(coachSelect).then(() => {
       coachSelect.value = currentCoach;
     });
-  
+
+    numPlayersEl.innerHTML = `<input id="edit-numPlayers" type="number" min="1" max="99" value="${numPlayersEl.textContent || 1}" />`;
     dateEl.innerHTML = `<input id="edit-date" type="date" value="${dateEl.textContent}" />`;
     timeEl.innerHTML = `<input id="edit-time" type="time" value="${timeEl.textContent}" />`;
     notesEl.innerHTML = `<textarea id="edit-notes">${notesEl.textContent === "None" ? "" : notesEl.textContent}</textarea>`;
@@ -206,12 +211,14 @@ function toggleEditMode(isEditing) {
     // Revert inputs back to text
     const athleteNameInput = document.getElementById("edit-athleteName");
     const coachInput = document.getElementById("edit-coach");
+    const numPlayersInput = document.getElementById("edit-numPlayers");
     const dateInput = document.getElementById("edit-date");
     const timeInput = document.getElementById("edit-time");
     const notesInput = document.getElementById("edit-notes");
 
     athleteNameEl.textContent = athleteNameInput.value;
     coachEl.textContent = coachInput.value;
+    numPlayersEl.textContent = numPlayersInput.value || "1";
     dateEl.textContent = dateInput.value;
     timeEl.textContent = timeInput.value;
     notesEl.textContent = notesInput.value || "None";
@@ -236,6 +243,7 @@ saveBtn.addEventListener("click", async () => {
   const updatedBooking = {
     athleteName: document.getElementById("edit-athleteName").value.trim(),
     coach: document.getElementById("edit-coach").value.trim(),
+    numPlayers: parseInt(document.getElementById("edit-numPlayers").value, 10) || 1,
     date: document.getElementById("edit-date").value,
     startTime: document.getElementById("edit-time").value,
     notes: document.getElementById("edit-notes").value.trim(),
@@ -245,6 +253,8 @@ saveBtn.addEventListener("click", async () => {
   if (
     !updatedBooking.athleteName ||
     !updatedBooking.coach ||
+    !updatedBooking.numPlayers || 
+    updatedBooking.numPlayers < 1 ||
     !updatedBooking.date ||
     !updatedBooking.startTime
   ) {
@@ -265,6 +275,7 @@ saveBtn.addEventListener("click", async () => {
     alert("Booking updated successfully!");
     toggleEditMode(false);
     loadCalendar();
+    loadLessonCounts();
   } catch (err) {
     console.error("❌ Error updating booking:", err);
     alert("Error updating booking: " + err);
@@ -346,6 +357,7 @@ saveBtn.addEventListener("click", async () => {
       e.target.reset();
 
       loadCalendar();
+      loadLessonCounts();
     } catch (err) {
       console.error("❌ Error adding booking:", err);
       alert("Error adding booking: " + err);
@@ -377,7 +389,7 @@ saveBtn.addEventListener("click", async () => {
     deleteBtn.disabled = true;
   
     if (!currentBookingId) {
-      console.warn("⚠️ No booking selected to delete");
+      console.warn("No booking selected to delete");
       return;
     }
   
@@ -394,6 +406,7 @@ saveBtn.addEventListener("click", async () => {
       currentBookingId = null;
   
       loadCalendar();
+      loadLessonCounts();
     } catch (err) {
       console.error("❌ Error deleting booking:", err);
       alert("Error deleting booking: " + err);
@@ -404,5 +417,28 @@ saveBtn.addEventListener("click", async () => {
       deleteConfirmActive = false;
     }
   });
+
+  async function loadLessonCounts() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/lesson-counts`);
+      const data = await res.json();
+      console.log('Lesson counts data:', data);
+      const tableBody = document.getElementById("lesson-counts-body");
+      tableBody.innerHTML = "";
+  
+      data.forEach((entry, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${entry.name}</td>
+          <td>${entry.totalLessons}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+    } catch (err) {
+      console.error("Error loading lesson counts:", err);
+    }
+  }
   
 });

@@ -31,7 +31,7 @@ const sportServices = {
     { title: "Shooting Drills", image: "Images/BLShooting.jpeg" },
     { title: "Defensive Strategies", image: "Images/BLDefensive.jpeg" },
   ],
-  basketball: [
+  boysBasketball: [
     { title: "Shooting Technique", image: "Images/BBBShootingMachanics.jpeg" },
     { title: "Ball Handling", image: "Images/BBBBallHandling.jpeg" },
     { title: "Defensive Fundamentals", image: "Images/BBBDefensiveDrills.jpeg" },
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Populate time dropdowns
   const startSelect = document.getElementById('start-select');
-  for (let h = 10; h <= 21; h++) {
+  for (let h = 9; h <= 21; h++) {
     const fmt = formatTime(h);
     startSelect.options.add(new Option(fmt, h));
   }
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function showBioModal(coach, e) {
 
     const now = new Date();
-    const startHour = 10;  
+    const startHour = 9;  
     const endHour = 20;   
     const daysToShow = 14;
   
