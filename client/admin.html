@@ -39,7 +39,10 @@
       <button class="close-btn" id="close-btn">x</button>
       <h2>New Booking</h2>
       <form id="booking-form">
-        <label>Athlete Name:</label>
+        <label>Guardian Name:</label>
+        <input type="text" id="guardianName" name="guardianName" required />
+
+        <label>Athlete(s) Name:</label>
         <input type="text" id="athleteName" name="athleteName" required />
   
         <label>Coach:</label>
@@ -70,6 +73,7 @@
       <button id="cancel-booking-btn" class="hidden">Cancel</button>
       <button id="delete-booking-btn">Delete Booking</button>
       <h2>Booking Details</h2>
+      <p><strong>Guardian:</strong> <span id="view-guardianName"></span></p>
       <p><strong>Athlete:</strong> <span id="view-athleteName"></span></p>
       <p><strong>Coach:</strong> <span id="view-coach"></span></p>
       <p><strong>Number of Players:</strong> <span id="view-numPlayers"></span></p>

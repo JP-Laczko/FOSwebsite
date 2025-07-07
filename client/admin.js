@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   title: `${booking.athleteName} - ${booking.coach}`,
                   start: isoStart,
                   extendedProps: {
+                    guardianName: booking.guardianName,
                     athleteName: booking.athleteName,
                     coach: booking.coach,
                     numPlayers: booking.numPlayers,
@@ -128,6 +129,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const event = info.event;
         currentBookingId = event.id;
 
+        document.getElementById("view-guardianName").textContent =
+          event.extendedProps.guardianName || "N/A";
         document.getElementById("view-athleteName").textContent =
           event.extendedProps.athleteName || "N/A";
         document.getElementById("view-coach").textContent =
@@ -324,18 +327,20 @@ saveBtn.addEventListener("click", async () => {
     e.preventDefault();
 
     const coach = document.getElementById("admin-coach-select").value;
+    const guardianName = document.getElementById("guardianName").value;
     const athleteName = document.getElementById("athleteName").value;
     const date = document.getElementById("bookingDate").value;
     const startTime = document.getElementById("startTime").value;
     const notes = document.getElementById("notes").value;
 
-    if (!coach || !athleteName || !date || !startTime) {
+    if (!coach || !guardianName || !athleteName || !date || !startTime) {
       alert("Please fill in all required fields.");
       return;
     }
 
     const booking = {
       coach,
+      guardianName,
       athleteName,
       date,
       startTime,

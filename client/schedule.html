@@ -32,7 +32,10 @@
     <section class="form-section">
       <h2>Schedule a Lesson</h2>
       <form id="schedule-form">
-        <label for="name">Athlete's Name:</label>
+        <label for="name">Guardian's name:</label>
+        <input type="text" name="guardian_name" id="guardian_name" required />
+
+        <label for="name">Athlete(s) Name:</label>
         <input type="text" name="user_name" id="user_name" required />
 
         <label for="email">Your Email:</label>
@@ -47,7 +50,7 @@
         </select>
         <button id="check-schedule-btn" type=button disabled>Please Select A Coach</button>
 
-        <label for="date">Date (Please allow 2 business days):</label>
+        <label for="date">Date (Please allow 12 hours):</label>
         <input type="date" name="date" id="date" required />
 
         <label for="time">Starting Time (1 hour lesson):</label>
@@ -83,6 +86,8 @@
             <option value="">Select number of players</option>
             <option value="1">1 Player - $59.99</option>
             <option value="2">2 Players - $89.99</option>
+            <option value="3">3 Players - $119.99</option>
+            <option value="4">4 Players - $149.99</option>
           </select>
 
         <label for="message">What you would like us to work on with your child?:</label>

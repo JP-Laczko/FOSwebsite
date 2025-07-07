@@ -268,11 +268,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = new Date();
     const startHour = 9;  
     const endHour = 20;   
-    const daysToShow = 14;
+    const daysToShow = 7;
   
     // Generate array of days from today
     let days = [];
-    for (let d = 1; d <= daysToShow; d++) {
+    for (let d = 2; d <= daysToShow; d++) {
       const dayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d);
       days.push(dayDate);
     }

@@ -146,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
   
+    const guardianName = document.getElementById("guardian_name").value.trim()
     const name = document.getElementById("user_name").value;
     const email = document.getElementById("user_email").value;
     const user_phone = document.getElementById("user_phone").value;
@@ -257,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
         payment_method: {
           card: card,
           billing_details: {
-            name: document.getElementById("name")?.value || "FOS Customer"
+            name: document.getElementById("guardian_name")?.value || "FOS Customer"
           },
         }
       });
@@ -270,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (result.paymentIntent.status === "succeeded") {
   
         await emailjs.send("service_b2jlk03", "template_wfpkvcf", {
-          user_name: name,
+          guardian_name: guardianName,
           user_email: email,
           user_phone: user_phone,
           coach: coach,
@@ -288,6 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           body: JSON.stringify({
             coach,
+            guardianName,
             athleteName: name,
             numPlayers,
             date: rawDate.toISOString(),
