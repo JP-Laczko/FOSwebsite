@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     // Generate array of days from today
     let days = [];
-    for (let d = 2; d <= daysToShow; d++) {
+    for (let d = 1; d <= daysToShow; d++) {
       const dayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d);
       days.push(dayDate);
     }
