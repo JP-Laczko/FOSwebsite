@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const coachSelect = document.getElementById("coach");
   const coachParam = new URLSearchParams(window.location.search).get("coach");
   const checkBtn = document.getElementById("check-schedule-btn");
-  
 
   coachSelect.addEventListener("change", () => {
     checkBtn.disabled = !coachSelect.value;
@@ -73,48 +72,63 @@ document.addEventListener("DOMContentLoaded", () => {
     // Save to sessionStorage so index.html knows what to open
     sessionStorage.setItem("openCoachModal", selectedCoach);
     sessionStorage.setItem("openSport", selectedSport);
-    console.log("HIe");
     window.location.href = "index.html";
   });
-  
-  let sortedCoaches = [];
 
-  fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
-    .then(res => res.json())
-    .then(data => {
-      // Sort alphabetically by name
-      sortedCoaches = data.sort((a, b) => a.name.localeCompare(b.name));
-  
-      // Clear loading option
-      coachSelect.innerHTML = '<option value="">Select a coach</option>';
-  
-      sortedCoaches.forEach(coach => {
-        if(coach.available === "yes") {
-          const option = document.createElement("option");
-          option.value = coach.name;
-          const prettySport = sportNames[coach.sport] || "No Sport";
-          option.textContent = `${coach.name} (${prettySport})`;
-          if (coachParam && coachParam === coach.name) {
-            option.selected = true;
-          }
-          coachSelect.appendChild(option);
+let sortedCoaches = [];
+
+async function loadCoachesAndSchedules() {
+  try {
+    // Fetch coaches from gist (main data)
+    const coachesResponse = await fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json");
+    const coachesData = await coachesResponse.json();
+
+    // Fetch schedules from backend
+    const schedulesResponse = await fetch(`${API_BASE_URL}/api/coach/schedules`);
+    const schedulesData = await schedulesResponse.json();
+
+    // Create a map of schedules keyed by coach name for quick lookup
+    const scheduleMap = {};
+    schedulesData.forEach(item => {
+      scheduleMap[item.name] = item.schedule;
+    });
+
+    // Merge schedules into coaches data
+    const mergedCoaches = coachesData.map(coach => {
+      return {
+        ...coach,
+        schedule: scheduleMap[coach.name] || {}  // empty object if no schedule found
+      };
+    });
+
+    // Sort coaches alphabetically by name
+    sortedCoaches = mergedCoaches.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Clear coachSelect options and repopulate
+    coachSelect.innerHTML = '<option value="">Select a coach</option>';
+    sortedCoaches.forEach(coach => {
+      if (coach.available === "yes") {
+        const option = document.createElement("option");
+        option.value = coach.name;
+        const prettySport = sportNames[coach.sport] || "No Sport";
+        option.textContent = `${coach.name} (${prettySport})`;
+        if (coachParam && coachParam === coach.name) {
+          option.selected = true;
         }
-      });
-
-      // Update button context
-      if (coachSelect.value) {
-        checkBtn.textContent = `Check ${coachSelect.value}'s Schedule`;
-        checkBtn.disabled = false;
-      } else {
-        checkBtn.textContent = "Please Select A Coach";
-        checkBtn.disabled = true;
+        coachSelect.appendChild(option);
       }
+    });
 
-    })
-    .catch(err => {
-      console.error("Failed to load coaches:", err);
-      coachSelect.innerHTML = '<option value="">Error loading coaches</option>';
-    });  
+    checkBtn.disabled = !coachSelect.value;
+    checkBtn.textContent = coachSelect.value
+    ? `Check ${coachSelect.value}'s Schedule`
+    : "Please Select A Coach";
+  } catch (err) {
+    console.error("Failed to load coaches or schedules:", err);
+  }
+}
+
+  loadCoachesAndSchedules();
 
   // Pre-fill coach name from the URL if available (it should be)
   const coachName = new URLSearchParams(window.location.search).get("coach");
@@ -221,12 +235,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       
-      const bookingHour = rawDate.getHours();
-
+      const timeString = document.getElementById("time").value; // e.g., "13:30"
+      const [hourStr, minuteStr] = timeString.split(":");
+      const bookingHour = parseInt(hourStr, 10) + parseInt(minuteStr, 10) / 60;
       const startFormatted = formatTime(availability.start);
       const endFormatted = formatTime(availability.end);
+           
       // Helper for user to see available hours on chosen day if they chose an invalid time
-      if (bookingHour < availability.start || bookingHour >= availability.end) {
+      if (bookingHour < availability.start || bookingHour > availability.end) {
         alert(`Coach is available from ${startFormatted} to ${endFormatted} on ${dayName}s. Please select a time in that range.`);
         return;
       }

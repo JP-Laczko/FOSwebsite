@@ -12,6 +12,8 @@ import bookingRoutes from "./routes/bookings.js";
 
 import paymentRoutes from './routes/payment.js';
 
+import coachRoutes from "./routes/coach.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -79,6 +81,21 @@ function checkAuth(req, res, next) {
   }
 }
 
+// Check coach auth for schedule adjusting
+function checkCoachAuth(req, res, next) {
+  if (req.session?.coach) return next();
+  return res.status(401).json({ message: "Unauthorized" });
+}
+
+function requireCoachLogin(req, res, next) {
+  if (req.session && req.session.coachId) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
+}
+
+
 // Admin login route
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body;
@@ -93,6 +110,9 @@ app.post("/api/admin/login", (req, res) => {
 
 // Use booking routes protected by auth middleware
 app.use("/api/bookings", bookingRoutes);
+
+// Coach auth route
+app.use('/api/coach', coachRoutes);
 
 // Static files
 app.use(express.static(path.join(__dirname, "../client")));

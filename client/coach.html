@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Coach Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+</head>
+<body>
+  <!-- LOGIN FORM -->
+  <div id="login-container">
+    <h2>Coach Login</h2>
+    <form id="coach-login-form">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p id="login-error" class="hidden" style="color:red;">Invalid credentials. Try again.</p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="coach-dashboard" class="hidden">
+    <h2>Welcome, <span id="coach-name-display"></span></h2>
+    <div id="calendar"></div>
+    <div class="logout-container">
+        <button id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modalBackdrop"></div>
+  <div id="editModal">
+    <h3 id="modalDate"></h3>
+    <label>Start Time 24H (13 = 1:00 PM | 9:00 AM Earliest)</label>
+    <input type="number" id="startHour" min="9" max="22" />
+    <label>End Time 24H (15.5 = 3:30 PM | 10:00 PM Latest)</label>
+    <input type="number" id="endHour" min="9" max="22" />
+    <button id="saveAvailabilityBtn">Save</button>
+    <button id="removeAvailabilityBtn" class="btn danger">Remove Availability</button>
+    <button onclick="closeModal()">Cancel</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="coach.js"></script>
+</body>
+</html>

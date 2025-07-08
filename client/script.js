@@ -348,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let isAvailable = false;
         if (schedule) {
           // availability window is [start, end)
-          isAvailable = slotTime >= schedule.start && slotTime < schedule.end;
+          isAvailable = slotTime >= schedule.start && slotTime <= schedule.end;
         }
   
         const slotDateIso = day.toISOString().slice(0,10); // yyyy-mm-dd
@@ -466,12 +466,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Load data 
-  fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
-    .then(r => r.json())
-    .then(data => {
-      coaches = data;
-      filterAndRender();
-    })
+  fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")  .then(async res => {
+    if (!res.ok) throw new Error(`Gist fetch failed: ${res.status}`);
+    const data = await res.json();
+    coaches = data;
+
+    try {
+      const scheduleRes = await fetch(`${API_BASE_URL}/api/coach/schedules`);
+      if (!scheduleRes.ok) throw new Error(`Schedule fetch failed: ${scheduleRes.status}`);
+      const scheduleData = await scheduleRes.json();
+
+      // Merge backend schedules into Gist coach data
+      coaches.forEach(c => {
+        const match = scheduleData.find(s => s.name === c.name);
+        if (match) {
+          c.schedule = match.schedule;
+        }
+      });
+    } catch (err) {
+      console.error("Failed to load schedules from backend:", err);
+    }
+
+    filterAndRender();
+  })
     .catch(err => console.error("Error fetching coaches:", err));
 
 });

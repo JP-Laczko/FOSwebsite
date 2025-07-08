@@ -299,9 +299,7 @@ saveBtn.addEventListener("click", async () => {
   function loadCoaches(selectElement) {
     const coachSelect = document.getElementById("admin-coach-select");
 
-    return fetch(
-      "https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json"
-    )
+    return fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
       .then((res) => res.json())
       .then((data) => {
         const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
