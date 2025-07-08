@@ -12,7 +12,7 @@ body {
   .navbar {
     background-color: #003366;
     color: white;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -24,7 +24,7 @@ body {
   
   .navbar .logo a {
     color: white;
-    margin-left: 2rem;
+    margin-left: 3rem;
     padding-top: 0.2rem;
     font-size: 1.5rem;
     font-weight: bold;
@@ -37,7 +37,6 @@ body {
     display: flex;
     gap: 2rem;
     margin: 0.3rem;
-    padding-right: 3rem;
   }
   
   .nav-links li a {
@@ -54,7 +53,7 @@ body {
   
   .hero-sports {
     position: relative;
-    height: 500px;  
+    height: 600px;  
     width: 100vw;   
     margin-top: 0;
     min-height: 350px;   
@@ -1758,6 +1757,27 @@ input[type="number"] {
     max-width: 95vw;
     max-height: 90vh;
     overflow-y: auto;
+  }
+
+  #coach-dashboard h2 {
+    font-size: 1.3rem;
+  }
+
+  #calendar {
+    padding: 0.5rem;
+  }
+
+  #editModal {
+    position: fixed;
+    top: 20%; 
+    left: 50%;
+    transform: translate(-50%, -30%);
+  }  
+
+  button,
+  .btn.danger,
+  .logout-btn {
+    font-size: 0.95rem;
   }
   
 }
