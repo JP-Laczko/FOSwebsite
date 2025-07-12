@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Coach Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
@@ -21,6 +22,7 @@
   <!-- DASHBOARD -->
   <div id="coach-dashboard" class="hidden">
     <h2>Welcome, <span id="coach-name-display"></span></h2>
+    <p id="mobile-calendar-hint" style="display: none; font-size: 0.9rem; color: #ccc; text-align: center; margin: 1rem 0;">📱 Tap any day to set your availability</p>
     <div id="calendar"></div>
     <div class="logout-container">
         <button id="logout-btn">Logout</button>

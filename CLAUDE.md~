@@ -1,60 +1,10 @@
-i've got some stuff that can help fix your issue:
+TypeError: Cannot read properties of undefined (reading 'Saturday')
+    at resetPastDaysAvailability (file:///Users/jp/Downloads/fos-sports-academy/server/routes/coach.js:18:21)
+    at file:///Users/jp/Downloads/fos-sports-academy/server/routes/coach.js:70:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
 
-first here is the data in mongo the backend:
+i was getting this error and am not sure why. i changed this line: const update = remove
+      ? { $unset: { [`schedule.${day}`]: "" } }
+      : { $set: { [`schedule.${day}`]: { start, end } } };
 
-
-
-schedule
-Object
-
-Thursday
-Object
-
-Friday
-Object
-
-Saturday
-Object
-
-Tuesday
-Object
-
-Monday
-Object
-
-as you can see there is no entry for wednesday and sunday.
-
-the data from this code:
-for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-          const date = new Date(baseDate);
-          date.setDate(baseDate.getDate() + ((dayIndex - baseDate.getDay() + 7) % 7));
-          
-          const dateStr = date.toISOString().split("T")[0];
-          const weekdayName = date.toLocaleDateString("en-US", { weekday: "long" });
-          
-          const entry = availabilityMap[dayIndex];
-          console.log(entry);
-          
-          if (!entry) {
-            // Day missing from data - show red "No availability"
-            events.push({ 
-              title: "No availability", 
-              start: dateStr, 
-              allDay: true,
-              backgroundColor: '#f44336',
-              borderColor: '#f44336',
-              textColor: '#fff',
-              extendedProps: {
-                type: 'no-availability'
-              }
-            });
-
-the entry returns this from the log:
-ObjectdayIndex: 0end: -1start: -1[[Prototype]]: Object
-coach.js:195 ObjectdayIndex: 1end: -1start: -1[[Prototype]]: Object
-coach.js:195 ObjectdayIndex: 2end: -1start: -1[[Prototype]]: Object
-coach.js:195 ObjectdayIndex: 3end: -1start: -1[[Prototype]]: Object
-coach.js:195 ObjectdayIndex: 4end: 18start: 12[[Prototype]]: Object
-coach.js:195 ObjectdayIndex: 5end: -1start: -1[[Prototype]]: Object
-coach.js:195 ObjectdayIndex: 6end: 22start: 15[[Prototype]]: Object
-as you can see it seems to default to -1 -1 which may be where the issue is coming from. can you figure out why, i bet this will fix many of the other issues on the modal.
+because it is supposed to be unset to remove the day iteself - it was not working before. Can you fix this, is that why the error is caused?

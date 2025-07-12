@@ -1270,6 +1270,8 @@ body {
     background: white;
     border-radius: 12px;
     padding: 1rem;
+    /* Prevent zoom on double tap */
+    touch-action: manipulation;
   }
 
   /* Ensure FullCalendar event colors display correctly */
@@ -1328,6 +1330,33 @@ body {
   .fc-event-title {
     color: inherit !important;
     font-weight: bold !important;
+  }
+  
+  /* Mobile FullCalendar optimizations */
+  @media (max-width: 768px) {
+    .fc-daygrid-day {
+      font-size: 0.8rem;
+    }
+    
+    .fc-event {
+      font-size: 0.7rem !important;
+      padding: 2px !important;
+    }
+    
+    .fc-daygrid-day-number {
+      font-size: 0.9rem;
+    }
+    
+    .fc-col-header-cell {
+      font-size: 0.8rem;
+    }
+    
+    /* Prevent zooming on calendar taps */
+    .fc-daygrid-day,
+    .fc-event,
+    .fc-daygrid-day-frame {
+      touch-action: manipulation;
+    }
   }
 
   .calendar-grid {
@@ -1800,6 +1829,10 @@ input[type="number"] {
   .modal {
     padding: 1rem;
     width: 95%;
+    /* Improve mobile modal */
+    max-height: 85vh;
+    overflow-y: auto;
+    touch-action: manipulation;
   }
 
   .info-section {
@@ -1877,6 +1910,9 @@ input[type="number"] {
     overflow-x: auto;
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
+    /* Prevent zoom on double tap */
+    touch-action: pan-x pan-y;
+    user-select: none;
   }
 
   .schedule-table {
@@ -1889,12 +1925,16 @@ input[type="number"] {
     padding: 8px;
     text-align: center;
     white-space: nowrap;
+    /* Prevent zoom on tap */
+    touch-action: manipulation;
   }
 
   .modal-content {
     max-width: 95vw;
     max-height: 90vh;
     overflow-y: auto;
+    /* Prevent zoom on double tap in modal */
+    touch-action: manipulation;
   }
 
   #coach-dashboard h2 {
@@ -1903,6 +1943,8 @@ input[type="number"] {
 
   #calendar {
     padding: 0.5rem;
+    /* Prevent zoom on double tap */
+    touch-action: manipulation;
   }
 
   #editModal {
@@ -1910,6 +1952,12 @@ input[type="number"] {
     top: 20%; 
     left: 50%;
     transform: translate(-50%, -30%);
+    /* Improve mobile modal */
+    min-width: 280px;
+    max-width: 95vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    touch-action: manipulation;
   }  
 
   button,

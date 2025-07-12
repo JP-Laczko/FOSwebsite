@@ -35,6 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
       nameDisplay.textContent = coachName;
       loginContainer.classList.add("hidden");
       dashboard.classList.remove("hidden");
+      
+      // Show mobile hint on small screens
+      if (window.innerWidth <= 768) {
+        document.getElementById("mobile-calendar-hint").style.display = "block";
+      }
+      
       initCalendar();
     } catch (err) {
       document.getElementById("login-error").classList.remove("hidden");
@@ -92,7 +98,10 @@ function getDateFromTomorrow(targetDayIndex) {
       events: fetchAvailabilityEvents,
       eventDisplay: 'block',
       dayMaxEvents: false,
-      moreLinkClick: 'popover'
+      moreLinkClick: 'popover',
+      // Mobile optimizations
+      aspectRatio: window.innerWidth < 768 ? 1.2 : 1.35,
+      dayHeaderFormat: window.innerWidth < 768 ? { weekday: 'short' } : { weekday: 'short', month: 'numeric', day: 'numeric' }
     });
   
     calendar.render();

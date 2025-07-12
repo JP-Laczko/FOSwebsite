@@ -415,15 +415,15 @@ document.addEventListener("DOMContentLoaded", () => {
     tableHtml += "</tbody></table>";
     // Wrap in scrollable div for mobile
     const scrollWrapper = `<div class="calendar-scroll">${tableHtml}</div>`;
-    modalContent.innerHTML = scrollWrapper;
   
     // Build the rest of the modal content - Calendar first, then player info
     let html = `
       <button class="close-btn">&times;</button>
       <h2>${coach.name}</h2>
       <h3>Availability</h3>
+      ${window.innerWidth <= 768 ? '<p class="mobile-hint" style="font-size: 0.9rem; color: #666; text-align: center; margin: 0 0 1rem 0;">📱 Scroll left/right to view all days</p>' : ''}
       <div class="schedule-container">
-          ${tableHtml}
+          ${scrollWrapper}
         </div>
       <hr/>
     `;
