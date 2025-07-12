@@ -76,8 +76,8 @@ function getDateFromTomorrow(targetDayIndex) {
     tomorrow.setHours(0, 0, 0, 0);
     tomorrow.setDate(tomorrow.getDate() + 1);
   
-    const weekLater = new Date(tomorrow);
-    weekLater.setDate(weekLater.getDate() + 6);
+    const sixDaysLater = new Date(tomorrow);
+    sixDaysLater.setDate(sixDaysLater.getDate() + 5);
   
     calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGrid",
@@ -85,11 +85,14 @@ function getDateFromTomorrow(targetDayIndex) {
       height: "auto",
       visibleRange: {
         start: tomorrow.toISOString().split("T")[0],
-        end: new Date(weekLater.getTime() + 24*60*60*1000).toISOString().split("T")[0], // add 1 day to include last day fully
+        end: new Date(sixDaysLater.getTime() + 24*60*60*1000).toISOString().split("T")[0], // add 1 day to include last day fully
       },
       dateClick: (info) => openModal(info.dateStr),
       eventClick: (info) => openModal(info.event.startStr.split("T")[0]),
       events: fetchAvailabilityEvents,
+      eventDisplay: 'block',
+      dayMaxEvents: false,
+      moreLinkClick: 'popover'
     });
   
     calendar.render();
@@ -151,7 +154,7 @@ function getDateFromTomorrow(targetDayIndex) {
   
       if (!res.ok) throw new Error("Failed to remove availability");
   
-      alert("Availability removed!");
+      alert("Availability removed! Day is now marked as 'No availability set'.");
       closeModal();
       calendar.refetchEvents();
     } catch (err) {
@@ -173,20 +176,85 @@ function getDateFromTomorrow(targetDayIndex) {
         const today = new Date();
         today.setDate(today.getDate() + 1); // Tomorrow
         const baseDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  
+
+        // Create a map of existing entries by dayIndex
+        const availabilityMap = {};
         data.weeklyAvailability.forEach(entry => {
+          availabilityMap[entry.dayIndex] = entry;
+        });
+
+        // Process all 7 days (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
           const date = new Date(baseDate);
-          date.setDate(baseDate.getDate() + ((entry.dayIndex - baseDate.getDay() + 7) % 7));
+          date.setDate(baseDate.getDate() + ((dayIndex - baseDate.getDay() + 7) % 7));
           
           const dateStr = date.toISOString().split("T")[0];
-          const start = `${dateStr}T${String(entry.start).padStart(2, "0")}:00:00`;
-          const end = `${dateStr}T${String(entry.end).padStart(2, "0")}:00:00`;
-  
-          events.push({ title: "Available", start, end, allDay: false });
-  
           const weekdayName = date.toLocaleDateString("en-US", { weekday: "long" });
-          weeklyAvailabilityMap[weekdayName] = { start: entry.start, end: entry.end };
-        });
+          
+          const entry = availabilityMap[dayIndex];
+          console.log(entry);
+          
+          if (!entry) {
+            // Day missing from data - show red "No availability"
+            events.push({ 
+              title: "No availability", 
+              start: dateStr, 
+              allDay: true,
+              backgroundColor: '#f44336',
+              borderColor: '#f44336',
+              textColor: '#fff',
+              extendedProps: {
+                type: 'no-availability'
+              }
+            });
+            weeklyAvailabilityMap[weekdayName] = { start: null, end: null };
+          } else if (entry.start === -1 || entry.end === -1) {
+            // -1,-1 means no availability set - show orange
+            events.push({ 
+              title: "No availability set", 
+              start: dateStr, 
+              allDay: true,
+              backgroundColor: '#ff9800',
+              borderColor: '#ff9800',
+              textColor: '#fff',
+              extendedProps: {
+                type: 'no-availability-set'
+              }
+            });
+            weeklyAvailabilityMap[weekdayName] = { start: -1, end: -1 };
+          } else if (entry.start === null || entry.end === null) {
+            // null means not available - show red
+            events.push({ 
+              title: "No availability", 
+              start: dateStr, 
+              allDay: true,
+              backgroundColor: '#f44336',
+              borderColor: '#f44336',
+              textColor: '#fff',
+              extendedProps: {
+                type: 'no-availability'
+              }
+            });
+            weeklyAvailabilityMap[weekdayName] = { start: null, end: null };
+          } else {
+            // Regular availability event
+            const start = `${dateStr}T${String(entry.start).padStart(2, "0")}:00:00`;
+            const end = `${dateStr}T${String(entry.end).padStart(2, "0")}:00:00`;
+            events.push({ 
+              title: `Available ${formatHour(entry.start)} - ${formatHour(entry.end)}`, 
+              start, 
+              end, 
+              allDay: false,
+              backgroundColor: '#28a745',
+              borderColor: '#28a745',
+              textColor: '#fff',
+              extendedProps: {
+                type: 'available'
+              }
+            });
+            weeklyAvailabilityMap[weekdayName] = { start: entry.start, end: entry.end };
+          }
+        }
   
         successCallback(events);
       })
@@ -215,8 +283,13 @@ function getDateFromTomorrow(targetDayIndex) {
     const availability = weeklyAvailabilityMap[day];
   
     if (availability) {
-      startInput.value = availability.start;
-      endInput.value = availability.end;
+      if (availability.start === null || availability.end === null || availability.start === -1 || availability.end === -1) {
+        startInput.value = "";
+        endInput.value = "";
+      } else {
+        startInput.value = availability.start;
+        endInput.value = availability.end;
+      }
     } else {
       startInput.value = "";
       endInput.value = "";

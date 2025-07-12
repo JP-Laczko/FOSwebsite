@@ -1,5 +1,6 @@
 let coaches = [];
 let selectedSport = ""; // tracks currently selected sport
+let inlinePopulated = false;
 const API_BASE_URL =
   ["localhost", "127.0.0.1"].includes(window.location.hostname)
     ? "http://127.0.0.1:4000"
@@ -50,62 +51,71 @@ const performanceLabels = [
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
-  const sidebar = document.querySelector(".sidebar");
-  const menuBtn = document.querySelector(".menu-btn");
   const container = document.getElementById("coach-container");
   const modal = document.getElementById("bio-modal");
   const modalContent = modal.querySelector(".modal-content");
-  const dayDropdown = document.getElementById("day-select");
-  const sportSelectSidebar = document.getElementById("sport-select-sidebar");
   const sportSelectMain = document.getElementById("sport-select-main");
   const coachInstruction = document.createElement('p');
   coachInstruction.className = 'coach-instruction';
   coachInstruction.textContent = 'Click on player cards to view their schedule';
-
-  // Populate time dropdowns
-  const startSelect = document.getElementById('start-select');
-  for (let h = 9; h <= 21; h++) {
-    const fmt = formatTime(h);
-    startSelect.options.add(new Option(fmt, h));
-  }
-
-  // Used to sync the 2 dropdowns
-  function syncSportSelects(source, target) {
-    target.value = source.value;
-    selectedSport = source.value;
-    filterAndRender();
-    renderServices(selectedSport);
-    showSportSections();
-  }
   
-  sportSelectMain.addEventListener("change", () => {
-    syncSportSelects(sportSelectMain, sportSelectSidebar)
-    filterAndRender();
-  });
+  // Create filter controls to be moved above instruction
+  const filterControls = document.createElement('div');
+  filterControls.className = 'filter-controls-inline';
+  filterControls.innerHTML = `
+    <div class="filter-explanation">
+      <p>Select your preferred day and time to find available coaches</p>
+    </div>
+    <div class="filter-row-stacked">
+      <div class="filter-item">
+        <label for="day-select-inline">Day:</label>
+        <select id="day-select-inline">
+          <option value="">Select Day</option>
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+          <option>Sunday</option>
+        </select>
+      </div>
+      
+      <div class="filter-item">
+        <label for="start-select-inline">Start Time:</label>
+        <select id="start-select-inline">
+          <option value="">Start Time</option>
+        </select>
+      </div>
+      
+      <span id="example-text-inline">e.g. "Thursdays starting at 2 PM"</span>
+    </div>
+  `;
   
-  sportSelectSidebar.addEventListener("change", () => {
-    syncSportSelects(sportSelectSidebar, sportSelectMain)
-    filterAndRender();
-  });
-
-  document.querySelector(".secondary-menu-btn").addEventListener("click", () => {
-    document.querySelector(".sidebar").classList.toggle("open");
-
-    if (sidebar.classList.contains("open")) {
-      secondaryMenuBtn?.classList.add("hide-on-sidebar");
-    } else {
-      secondaryMenuBtn?.classList.remove("hide-on-sidebar");
+  // Populate inline time dropdown
+  function populateInlineTimeDropdown() {
+    const startSelectInline = document.getElementById('start-select-inline');
+    if (startSelectInline) {
+      for (let h = 9; h <= 22; h++) {
+        const fmt = formatTime(h);
+        startSelectInline.options.add(new Option(fmt, h));
+      }
+      inlinePopulated = true;
+      
     }
-  });
+  }
 
+  sportSelectMain.addEventListener("change", () => {
+    selectedSport = sportSelectMain.value;
     if (selectedSport) {
       filterAndRender();
       renderServices(selectedSport);
       showSportSections();
     } else {
-      container.innerHTML = ""; // hide coach cards
-      hideSportSections();
+      filterAndRender(); // This will call hideSportSections()
     }
+  });
+
 
   // Format hour (24→12h with AM/PM)
   function formatTime(hour) {
@@ -123,24 +133,13 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${displayHour}:${displayMinute} ${period}`;
   }
 
-  const secondaryMenuBtn = document.querySelector(".secondary-menu-btn");
-
-  // Sidebar toggle
-  menuBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("open");
-
-    if (sidebar.classList.contains("open")) {
-      secondaryMenuBtn?.classList.add("hide-on-sidebar");
-    } else {
-      secondaryMenuBtn?.classList.remove("hide-on-sidebar");
-    }
-
-  });
 
   // Main filter + render
   function filterAndRender() {
-    const selectedDay = dayDropdown.value;
-    const startT = parseInt(startSelect.value);
+    const daySelectInline = document.getElementById('day-select-inline');
+    const startSelectInline = document.getElementById('start-select-inline');
+    const selectedDay = daySelectInline?.value || "";
+    const startT = startSelectInline?.value ? parseInt(startSelectInline.value) : "";
     const selectedSport = document.getElementById("sport-select-main").value;
 
     if (selectedSport === "") {
@@ -149,20 +148,23 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
   
       let filtered = coaches.filter(c => {
-        const isAvailable = c.available === "yes";
         const matchesSport = c.sport === selectedSport;
+        if (!matchesSport) return false;
 
-        // Filter by day availability
-        const hasDay = selectedDay !== "" && c.schedule?.[selectedDay];
-        if (selectedDay && !hasDay) return false;
+        // If no day filter is selected, show all coaches for the sport
+        if (selectedDay === "") return true;
+        // Filter by day availability (exclude -1 values)
+        const hasDay = c.schedule?.[selectedDay] && 
+                      c.schedule[selectedDay].start !== -1 && c.schedule[selectedDay].end !== -1;
+        if (!hasDay) return false;
+        // If day is selected but no time filter, show coaches available that day
+        if (!startT) return true;
 
-        let matchesTime = true;
-        if (selectedDay !== "" && startT) {
-          const slot = c.schedule?.[selectedDay];
-          matchesTime = slot && startT >= slot.start
-        } 
-    
-        return isAvailable && matchesSport && matchesTime;
+        // Filter by time availability
+        const slot = c.schedule?.[selectedDay];
+        const matchesTime = slot && slot.start !== -1 && slot.end !== -1 && startT >= slot.start && startT < slot.end;
+        
+        return matchesTime;
       });
 
       if (filtered.length === 0) {
@@ -213,6 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Render service section with the 3 images and text for the different sports
   function renderServices(sport) {
+
     const serviceList = sportServices[sport] || [];
     const container = document.getElementById("services-container");
     container.innerHTML = "";
@@ -238,8 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
     coachSection?.classList.remove('has-padding'); 
 
     const instruction = document.querySelector('.coach-instruction');
-  if (instruction) instruction.remove();
-   
+    if (instruction) instruction.remove();
+    
+    const filterControls = document.querySelector('.filter-controls-inline');
+    if (filterControls) filterControls.remove();
   }
   
   function showSportSections() {
@@ -250,10 +255,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const coachSection = document.getElementById('coach-section');
     coachSection?.classList.add('has-padding'); 
 
+    if (!document.querySelector('.filter-controls-inline')) {
+      const coachWrapper = coachSection.querySelector('.coach-wrapper');
+      coachSection.insertBefore(filterControls, coachWrapper);
+      
+      // Set up event listeners for inline controls
+      const daySelectInline = document.getElementById('day-select-inline');
+      const startSelectInline = document.getElementById('start-select-inline');
+      
+      daySelectInline.addEventListener('change', () => {
+        selectedDay = daySelectInline.value;
+        filterAndRender();
+      });
+      
+      startSelectInline.addEventListener('change', () => {
+        startT = startSelectInline.value ? parseInt(startSelectInline.value) : "";
+        filterAndRender();
+      });
+    }
+    
     if (!document.querySelector('.coach-instruction')) {
       const coachWrapper = coachSection.querySelector('.coach-wrapper');
       coachSection.insertBefore(coachInstruction, coachWrapper);
     }
+
+    if(!inlinePopulated) {
+      populateInlineTimeDropdown();
+    }
+    
   }
   
   // Helper: format date display (Mon 7/1)
@@ -267,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = new Date();
     const startHour = 9;  
     const endHour = 20;   
-    const daysToShow = 7;
+    const daysToShow = 6;
   
     // Generate array of days from today
     let days = [];
@@ -346,9 +375,24 @@ document.addEventListener("DOMContentLoaded", () => {
         let slotTime = hour + (minute === 30 ? 0.5 : 0);
   
         let isAvailable = false;
-        if (schedule) {
-          // availability window is [start, end)
+        let noAvailabilitySet = false;
+        
+        // Handle the three availability states:
+        if (!schedule || (schedule.start === null && schedule.end === null)) {
+          // Case 1: No schedule object OR schedule exists but with null values (missing from DB)
+          // → Show as unavailable (red ×)
+          isAvailable = false;
+          noAvailabilitySet = false;
+        } else if (schedule.start === -1 && schedule.end === -1) {
+          // Case 2: Schedule exists but coach hasn't set availability (-1 values)
+          // → Show as "Not Set" (orange)
+          isAvailable = false;
+          noAvailabilitySet = true;
+        } else {
+          // Case 3: Schedule exists with valid times
+          // → Check if slot falls within availability window [start, end)
           isAvailable = slotTime >= schedule.start && slotTime <= schedule.end;
+          noAvailabilitySet = false;
         }
   
         const slotDateIso = day.toISOString().slice(0,10); // yyyy-mm-dd
@@ -358,6 +402,8 @@ document.addEventListener("DOMContentLoaded", () => {
           tableHtml += `<td class="available" data-date="${slotDateIso}" data-hour="${hour}" data-minute="${minute}">✔</td>`;
         } else if (bookedSet.has(key)) {
           tableHtml += `<td class="booked">Booked</td>`;
+        } else if (noAvailabilitySet) {
+          tableHtml += `<td class="noavailabilityset">Not Set</td>`;
         } else {
           tableHtml += `<td class="unavailable">×</td>`;
         }
@@ -371,10 +417,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollWrapper = `<div class="calendar-scroll">${tableHtml}</div>`;
     modalContent.innerHTML = scrollWrapper;
   
-    // Build the rest of the modal content
+    // Build the rest of the modal content - Calendar first, then player info
     let html = `
       <button class="close-btn">&times;</button>
       <h2>${coach.name}</h2>
+      <h3>Availability</h3>
+      <div class="schedule-container">
+          ${tableHtml}
+        </div>
+      <hr/>
     `;
   
     if (coach.bio?.performance) {
@@ -389,11 +440,6 @@ document.addEventListener("DOMContentLoaded", () => {
     html += `
       <p>${coach.bio?.text || ""}</p>
       ${coach.instagram ? `<p><a href="${coach.instagram}" target="_blank">${coach.name}'s Instagram</a></p>` : ""}
-      <hr/>
-      <h3>Availability</h3>
-      <div class="schedule-container">
-          ${tableHtml}
-        </div>    
     `;
   
     modalContent.innerHTML = html;
@@ -442,9 +488,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-  // Listen to filters
-  dayDropdown.addEventListener("change", filterAndRender);
-  startSelect.addEventListener("change", filterAndRender);
 
   const autoCoach = sessionStorage.getItem("openCoachModal");
   const autoSport = sessionStorage.getItem("openSport");

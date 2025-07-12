@@ -1,0 +1,6 @@
+Ok i'm sending this message again here it is:
+
+Im looking at one player specifically who on his coach login I see all red from Sunday through Wednesday saying no availability. In the data I see monday and Tuesday with start and end of -1 -1, yet these are the ones that are red, Sunday and Wednesday are not there, yet they are orange meaning no availability set (these should be the ones that are red and monday Tuesday should be orange). Again, the coach calendar needs to accurately represent the status. If it pulls data and the day has -1 -1 it should say no availability set and be orange. Vise versa with no availability and red. Again PLEASE fix it so the status on the cards is not backwards, and the orange color actually shows up. You still didn’t even touch the select start inline section as it is just white and black, nothing is centered and it looks horrible.
+
+
+After this, the only thing that changed was now i can see no availability set with an orage background for all the days that are either not available, or no availability set. You did not fuck the issue in there fully, you did not fix the modal issue, IT IS STILL BACKWARDS AFTER THE THIRD TIME, fucking fix it. then, you didn't even fucking touch the filter-controls-inline section at all, after i explicity stated to fix it. figure it out.

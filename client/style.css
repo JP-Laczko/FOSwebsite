@@ -24,7 +24,7 @@ body {
   
   .navbar .logo a {
     color: white;
-    margin-left: 3rem;
+    margin-left: 1rem;
     padding-top: 0.2rem;
     font-size: 1.5rem;
     font-weight: bold;
@@ -1272,6 +1272,64 @@ body {
     padding: 1rem;
   }
 
+  /* Ensure FullCalendar event colors display correctly */
+  .fc-event {
+    border: 2px solid transparent !important;
+    font-weight: bold !important;
+  }
+  
+  .fc-event.fc-bg-event {
+    opacity: 0.8 !important;
+  }
+  
+  /* Style background events properly */
+  .fc-bg-event {
+    opacity: 0.8 !important;
+  }
+
+  /* Force orange color for no-availability-set events */
+  .fc-event[style*="background-color: rgb(255, 152, 0)"],
+  .fc-event[style*="background-color: #ff9800"],
+  .fc-daygrid-event[style*="background-color: #ff9800"] {
+    background-color: #ff9800 !important;
+    border-color: #ff9800 !important;
+    color: #fff !important;
+  }
+
+  /* Ensure orange events are visible */
+  .fc-event.fc-daygrid-event {
+    opacity: 1 !important;
+  }
+
+  /* Target by title for extra specificity */
+  .fc-event[title*="No availability set"] {
+    background-color: #ff9800 !important;
+    border-color: #ff9800 !important;
+    color: #fff !important;
+  }
+  
+  /* Make sure day cells show background events clearly */
+  .fc-daygrid-day {
+    position: relative;
+  }
+  
+  /* Override FullCalendar's default blue color for events */
+  .fc-event-main {
+    color: inherit !important;
+  }
+  
+  /* Ensure all-day events show their background colors */
+  .fc-daygrid-event {
+    border-radius: 4px !important;
+    margin: 1px !important;
+  }
+  
+  /* Make sure event titles are visible */
+  .fc-event-title {
+    color: inherit !important;
+    font-weight: bold !important;
+  }
+
   .calendar-grid {
     border-collapse: collapse;
     width: 100%;
@@ -1290,7 +1348,17 @@ body {
   }
   
   .slot.unavailable {
-    background-color: #f2b8b5; /* light red */
+    background-color: #cdcdb8; /* light red */
+    color: #666;
+  } 
+  .schedule-table td.noavailabilityset {
+    background-color: #e8811a; /* light orange */
+    color: #fff;
+    cursor: default;
+  }
+  
+  .slot.noavailabilityset {
+    background-color: #e8811a; /* light orange */
     color: #666;
   } 
 
@@ -1455,16 +1523,33 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
     z-index: 1000;
+    min-width: 450px;
+    max-width: 90vw;
+    text-align: center;
+    max-height: 80vh;
+    overflow-y: auto;
   }
   
   #editModal input {
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     display: block;
     width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+  }
+  
+  #editModal input:focus {
+    outline: none;
+    border-color: #0077cc;
+    box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.1);
   }
   
   #modalBackdrop {
@@ -1474,8 +1559,9 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 999;
+    backdrop-filter: blur(2px);
   }
 
   .btn.danger {
@@ -1548,8 +1634,61 @@ input[type="number"] {
 
 #editModal label {
   display: block;
-  margin-top: 15px;
+  margin-top: 20px;
+  margin-bottom: 8px;
   font-weight: bold;
+  color: #333;
+  font-size: 16px;
+  text-align: left;
+}
+
+#editModal h3 {
+  color: #0077cc;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+#editModal button {
+  margin: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#editModal #saveAvailabilityBtn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+#editModal #saveAvailabilityBtn:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+#editModal #removeAvailabilityBtn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+#editModal #removeAvailabilityBtn:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+#editModal button[onclick="closeModal()"] {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+}
+
+#editModal button[onclick="closeModal()"]:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
 }
 
   /* --- MOBILE OPTIMIZATIONS --- */
@@ -1562,9 +1701,8 @@ input[type="number"] {
     padding: 1rem;
   }
 
-   /* Move logo right a bit so menu button doesn’t cover it */
    .navbar .logo a {
-    margin-left: 3.5rem;
+    margin-left: 1rem;
     padding-top: 0.8rem;
   }
 
@@ -1799,6 +1937,124 @@ input[type="number"] {
     min-width: 44px;
     min-height: 44px;
     font-size: 1rem;
+  }
+
+  /* Inline filter controls */
+  .filter-controls-inline {
+    background: linear-gradient(135deg, #0077cc 0%, #003366 100%);
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  .filter-explanation {
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-explanation p {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .filter-row-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .filter-item label {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .filter-item select {
+    padding: 0.75rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    width: 100%;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+  }
+
+  .filter-item select:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+
+  #example-text-inline {
+    color: rgba(255, 255, 255, 0.9);
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .filter-row label {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .filter-row select {
+    padding: 0.5rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: white;
+    min-width: 120px;
+  }
+
+  .filter-row select:focus {
+    outline: none;
+    border-color: #0066cc;
+  }
+
+  @media (max-width: 768px) {
+    .filter-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+    
+    .filter-row select {
+      width: 100%;
+    }
   }
 
   

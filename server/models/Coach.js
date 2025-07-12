@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const scheduleSubSchema = new mongoose.Schema({
-  Monday: { start: Number, end: Number },
-  Tuesday: { start: Number, end: Number },
-  Wednesday: { start: Number, end: Number },
-  Thursday: { start: Number, end: Number },
-  Friday: { start: Number, end: Number },
-  Saturday: { start: Number, end: Number },
-  Sunday: { start: Number, end: Number }
+  Monday: { start: { type: Number, default: -1 }, end: { type: Number, default: -1 } },
+  Tuesday: { start: { type: Number, default: -1 }, end: { type: Number, default: -1 } },
+  Wednesday: { start: { type: Number, default: -1 }, end: { type: Number, default: -1 } },
+  Thursday: { start: { type: Number, default: -1 }, end: { type: Number, default: -1 } },
+  Friday: { start: { type: Number, default: -1 }, end: { type: Number, default: -1 } },
+  Saturday: { start: { type: Number, default: -1 }, end: { type: Number, default: -1 } },
+  Sunday: { start: { type: Number, default: -1 }, end: { type: Number, default: -1 } }
 }, { _id: false });
 
 const coachSchema = new mongoose.Schema({
@@ -15,13 +15,13 @@ const coachSchema = new mongoose.Schema({
   password: { type: String, required: true },                // hashed password
   name: { type: String, required: true, unique: true },          // coach's display name
   schedule: { type: scheduleSubSchema, required: true, default: {
-    Monday: { start: 9, end: 22 },
-    Tuesday: { start: 9, end: 22 },
-    Wednesday: { start: 9, end: 22 },
-    Thursday: { start: 9, end: 22 },
-    Friday: { start: 9, end: 22 },
-    Saturday: { start: 9, end: 22 },
-    Sunday: { start: 9, end: 22 }
+    Monday: { start: -1, end: -1 },
+    Tuesday: { start: -1, end: -1 },
+    Wednesday: { start: -1, end: -1 },
+    Thursday: { start: -1, end: -1 },
+    Friday: { start: -1, end: -1 },
+    Saturday: { start: -1, end: -1 },
+    Sunday: { start: -1, end: -1 }
   }}
 });
 
