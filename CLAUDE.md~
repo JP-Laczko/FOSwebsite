@@ -1,6 +1,60 @@
-Ok i'm sending this message again here it is:
+i've got some stuff that can help fix your issue:
 
-Im looking at one player specifically who on his coach login I see all red from Sunday through Wednesday saying no availability. In the data I see monday and Tuesday with start and end of -1 -1, yet these are the ones that are red, Sunday and Wednesday are not there, yet they are orange meaning no availability set (these should be the ones that are red and monday Tuesday should be orange). Again, the coach calendar needs to accurately represent the status. If it pulls data and the day has -1 -1 it should say no availability set and be orange. Vise versa with no availability and red. Again PLEASE fix it so the status on the cards is not backwards, and the orange color actually shows up. You still didn’t even touch the select start inline section as it is just white and black, nothing is centered and it looks horrible.
+first here is the data in mongo the backend:
 
 
-After this, the only thing that changed was now i can see no availability set with an orage background for all the days that are either not available, or no availability set. You did not fuck the issue in there fully, you did not fix the modal issue, IT IS STILL BACKWARDS AFTER THE THIRD TIME, fucking fix it. then, you didn't even fucking touch the filter-controls-inline section at all, after i explicity stated to fix it. figure it out.
+
+schedule
+Object
+
+Thursday
+Object
+
+Friday
+Object
+
+Saturday
+Object
+
+Tuesday
+Object
+
+Monday
+Object
+
+as you can see there is no entry for wednesday and sunday.
+
+the data from this code:
+for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+          const date = new Date(baseDate);
+          date.setDate(baseDate.getDate() + ((dayIndex - baseDate.getDay() + 7) % 7));
+          
+          const dateStr = date.toISOString().split("T")[0];
+          const weekdayName = date.toLocaleDateString("en-US", { weekday: "long" });
+          
+          const entry = availabilityMap[dayIndex];
+          console.log(entry);
+          
+          if (!entry) {
+            // Day missing from data - show red "No availability"
+            events.push({ 
+              title: "No availability", 
+              start: dateStr, 
+              allDay: true,
+              backgroundColor: '#f44336',
+              borderColor: '#f44336',
+              textColor: '#fff',
+              extendedProps: {
+                type: 'no-availability'
+              }
+            });
+
+the entry returns this from the log:
+ObjectdayIndex: 0end: -1start: -1[[Prototype]]: Object
+coach.js:195 ObjectdayIndex: 1end: -1start: -1[[Prototype]]: Object
+coach.js:195 ObjectdayIndex: 2end: -1start: -1[[Prototype]]: Object
+coach.js:195 ObjectdayIndex: 3end: -1start: -1[[Prototype]]: Object
+coach.js:195 ObjectdayIndex: 4end: 18start: 12[[Prototype]]: Object
+coach.js:195 ObjectdayIndex: 5end: -1start: -1[[Prototype]]: Object
+coach.js:195 ObjectdayIndex: 6end: 22start: 15[[Prototype]]: Object
+as you can see it seems to default to -1 -1 which may be where the issue is coming from. can you figure out why, i bet this will fix many of the other issues on the modal.

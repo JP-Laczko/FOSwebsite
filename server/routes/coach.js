@@ -15,7 +15,7 @@ async function resetPastDaysAvailability(coach) {
   
   // Only reset the current day to -1 if it's not already -1
   const currentDayName = dayNames[currentDay];
-  if (coach.schedule[currentDayName] && 
+  if (coach.schedule && coach.schedule[currentDayName] && 
       (coach.schedule[currentDayName].start !== -1 || coach.schedule[currentDayName].end !== -1)) {
     updates[`schedule.${currentDayName}.start`] = -1;
     updates[`schedule.${currentDayName}.end`] = -1;
@@ -101,24 +101,18 @@ router.post('/login', async (req, res) => {
       // Fetch updated coach data as raw document to check what actually exists
       const updatedCoach = await Coach.findById(req.session.coachId).lean();
       
-      console.log("Raw schedule from DB:", JSON.stringify(updatedCoach.schedule, null, 2));
-      
       // Transform schedule into weeklyAvailability array with dayIndex
       const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
       const weeklyAvailability = dayNames.map((day, index) => {
         const dayData = updatedCoach.schedule?.[day];
         const dayExists = updatedCoach.schedule && Object.prototype.hasOwnProperty.call(updatedCoach.schedule, day);
         
-        console.log(`Day ${day} (${index}): exists=${dayExists}, data=`, dayData);
-        
         // Check if the day actually exists in the raw database document
         if (!dayExists || !dayData) {
           // Day truly missing from database - should show red "No availability"
-          console.log(`${day} is missing - returning null`);
           return { dayIndex: index, start: null, end: null };
         } else {
           // Day exists in database - return actual values (including -1 for "no availability set")
-          console.log(`${day} exists - returning actual values`);
           return { dayIndex: index, start: dayData.start, end: dayData.end };
         }
       });
@@ -147,7 +141,7 @@ router.post("/updateScheduleDay", async (req, res) => {
 
   try {
     const update = remove
-      ? { $set: { [`schedule.${day}`]: { start: -1, end: -1 } } }
+      ? { $unset: { [`schedule.${day}`]: "" } }
       : { $set: { [`schedule.${day}`]: { start, end } } };
 
     const updatedCoach = await Coach.findOneAndUpdate(

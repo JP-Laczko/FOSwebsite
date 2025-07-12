@@ -153,8 +153,8 @@ function getDateFromTomorrow(targetDayIndex) {
       });
   
       if (!res.ok) throw new Error("Failed to remove availability");
-  
-      alert("Availability removed! Day is now marked as 'No availability set'.");
+      
+      alert("Availability removed! Day is now marked as 'Not Available'.");
       closeModal();
       calendar.refetchEvents();
     } catch (err) {
