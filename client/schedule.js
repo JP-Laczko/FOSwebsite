@@ -5,6 +5,7 @@ const sportNames = {
   boysLax: "Boys Lacrosse",
   softball: "Softball",
   boysBasketball: "Boys Basketball",
+  fieldHockey: "Field Hockey",
 };
 
 const priceMap = {

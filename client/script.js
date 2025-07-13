@@ -36,6 +36,11 @@ const sportServices = {
     { title: "Shooting Technique", image: "Images/BBBShootingMachanics.jpeg" },
     { title: "Ball Handling", image: "Images/BBBBallHandling.jpeg" },
     { title: "Defensive Fundamentals", image: "Images/BBBDefensiveDrills.jpeg" },
+  ],
+  fieldHockey: [
+    { title: "Stick Handling", image: "Images/FHStick.jpeg" },
+    { title: "Shooting Mechanics", image: "Images/FHShooting.jpeg" },
+    { title: "Defensive Strategies", image: "Images/FHDefense.jpeg" },
   ]
 };
 

@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     boysLax: "Boys Lacrosse",
     boysBasketball: "Boys Basketball",
     softball: "Softball",
+    fieldHockey: "Field Hockey",
   };
 
   let deleteConfirmActive = false;
