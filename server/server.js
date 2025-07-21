@@ -7,12 +7,14 @@ import session from "express-session";
 import path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
+import cron from "node-cron";
 
 import bookingRoutes from "./routes/bookings.js"; 
 
 import paymentRoutes from './routes/payment.js';
 
 import coachRoutes from "./routes/coach.js";
+import Coach from "./models/Coach.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,6 +72,40 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
   });
+
+// Daily reset job - runs at 12:01 AM every day
+cron.schedule('1 0 * * *', async () => {
+  try {
+    console.log('🔄 Running daily coach availability reset...');
+    
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const currentDayName = dayNames[currentDay];
+    
+    // Reset all coaches' current day availability to (-1, -1)
+    const result = await Coach.updateMany(
+      {
+        $or: [
+          { [`schedule.${currentDayName}.start`]: { $ne: -1 } },
+          { [`schedule.${currentDayName}.end`]: { $ne: -1 } }
+        ]
+      },
+      {
+        $set: {
+          [`schedule.${currentDayName}.start`]: -1,
+          [`schedule.${currentDayName}.end`]: -1
+        }
+      }
+    );
+    
+    console.log(`✅ Daily reset complete: ${result.modifiedCount} coaches updated for ${currentDayName}`);
+  } catch (error) {
+    console.error('❌ Error during daily coach reset:', error);
+  }
+}, {
+  timezone: "America/New_York" // Adjust timezone as needed
+});
 
 // Auth middleware
 function checkAuth(req, res, next) {
