@@ -71,10 +71,98 @@ body {
   }
   
   .hero-sports h1 {
-    font-size: 3rem;
+    font-size: 3.5rem;
     margin: 0;
-    text-shadow: 1px 1px 5px rgba(19, 10, 197, 2);
-    color: white;
+    font-weight: 900;
+    background: linear-gradient(45deg, #ffffff, #e3f2fd, #ffffff, #bbdefb);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    overflow: hidden;
+    text-shadow: none;
+    animation: title-glow 2s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) 
+            drop-shadow(0 0 20px rgba(0, 119, 204, 0.3))
+            drop-shadow(0 0 30px rgba(0, 170, 255, 0.2));
+  }
+
+  @keyframes title-glow {
+    0% {
+      background-position: 0% 50%;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) 
+              drop-shadow(0 0 20px rgba(0, 119, 204, 0.3))
+              drop-shadow(0 0 30px rgba(0, 170, 255, 0.2));
+    }
+    100% {
+      background-position: 100% 50%;
+      filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)) 
+              drop-shadow(0 0 25px rgba(0, 119, 204, 0.5))
+              drop-shadow(0 0 35px rgba(0, 170, 255, 0.4))
+              drop-shadow(0 0 45px rgba(255, 255, 255, 0.3));
+    }
+  }
+
+  .hero-sports h1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 1),
+      rgba(0, 170, 255, 0.8),
+      rgba(255, 255, 255, 1),
+      rgba(255, 255, 255, 0.8),
+      transparent
+    );
+    animation: title-shimmer 2.5s infinite;
+    z-index: 1;
+    pointer-events: none;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    mix-blend-mode: overlay;
+  }
+
+  .hero-sports h1::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 119, 204, 0.6),
+      rgba(0, 170, 255, 0.9),
+      rgba(255, 255, 255, 0.7),
+      rgba(0, 170, 255, 0.9),
+      rgba(0, 119, 204, 0.6),
+      transparent
+    );
+    animation: title-shimmer 2.5s infinite 0.8s;
+    z-index: 2;
+    pointer-events: none;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    mix-blend-mode: screen;
+  }
+
+  @keyframes title-shimmer {
+    0% {
+      left: -150%;
+    }
+    100% {
+      left: 100%;
+    }
   }
   
   .hero-sports p {
@@ -295,6 +383,33 @@ body {
     cursor: pointer;
     color: #fff;
     font-weight: bold;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .schedule-table td.available::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
   }
   
   .schedule-table td.unavailable {
@@ -683,6 +798,84 @@ body {
 .coach-card:hover .click-hint {
   opacity: 1;
 }
+
+/* Shimmer effect for coach cards with availability */
+.coach-card.has-availability::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: coach-shimmer 3s infinite;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Circling blue shimmer border for coach cards with availability */
+.coach-card.has-availability {
+  animation: rotating-border-glow 4s linear infinite;
+}
+
+@keyframes rotating-border-glow {
+  0% {
+    box-shadow: 
+      inset 0 0 0 300px rgba(0, 0, 0, 0.5),
+      0 0 0 4px #0077cc,
+      0 0 20px #0077cc,
+      0 0 35px rgba(0, 119, 204, 0.5);
+  }
+  25% {
+    box-shadow: 
+      inset 0 0 0 300px rgba(0, 0, 0, 0.5),
+      3px 0 0 0 #0077cc,
+      0 3px 0 0 #00aaff,
+      -3px 0 0 0 #0077cc,
+      0 -3px 0 0 #00aaff,
+      0 0 25px #00aaff,
+      0 0 40px rgba(0, 170, 255, 0.4);
+  }
+  50% {
+    box-shadow: 
+      inset 0 0 0 300px rgba(0, 0, 0, 0.5),
+      0 0 0 4px #00aaff,
+      0 0 20px #00aaff,
+      0 0 35px rgba(0, 170, 255, 0.5);
+  }
+  75% {
+    box-shadow: 
+      inset 0 0 0 300px rgba(0, 0, 0, 0.5),
+      -3px 0 0 0 #00aaff,
+      0 -3px 0 0 #0077cc,
+      3px 0 0 0 #00aaff,
+      0 3px 0 0 #0077cc,
+      0 0 25px #0077cc,
+      0 0 40px rgba(0, 119, 204, 0.4);
+  }
+  100% {
+    box-shadow: 
+      inset 0 0 0 300px rgba(0, 0, 0, 0.5),
+      0 0 0 4px #0077cc,
+      0 0 20px #0077cc,
+      0 0 35px rgba(0, 119, 204, 0.5);
+  }
+}
+
+@keyframes coach-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
 
 .no-results {
   display: block;
@@ -1987,83 +2180,6 @@ input[type="number"] {
     font-size: 1rem;
   }
 
-  /* Inline filter controls */
-  .filter-controls-inline {
-    background: linear-gradient(135deg, #0077cc 0%, #003366 100%);
-    padding: 2rem;
-    border-radius: 16px;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    max-width: 650px;
-    margin-left: auto;
-    margin-right: auto;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-  }
-
-  .filter-explanation {
-    margin-bottom: 1.5rem;
-  }
-
-  .filter-explanation p {
-    color: #ffffff;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  .filter-row-stacked {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-  }
-
-  .filter-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    max-width: 250px;
-  }
-
-  .filter-item label {
-    font-weight: 600;
-    color: #ffffff;
-    font-size: 1rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  }
-
-  .filter-item select {
-    padding: 0.75rem;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 10px;
-    font-size: 1rem;
-    background: rgba(255, 255, 255, 0.95);
-    width: 100%;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-weight: 500;
-  }
-
-  .filter-item select:focus {
-    outline: none;
-    border-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-1px);
-  }
-
-  #example-text-inline {
-    color: rgba(255, 255, 255, 0.9);
-    font-style: italic;
-    font-size: 0.9rem;
-    margin-top: 1rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  }
 
   .filter-row {
     display: flex;
@@ -2103,6 +2219,7 @@ input[type="number"] {
     .filter-row select {
       width: 100%;
     }
+
   }
 
   

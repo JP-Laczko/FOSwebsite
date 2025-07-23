@@ -1,6 +1,5 @@
 let coaches = [];
 let selectedSport = ""; // tracks currently selected sport
-let inlinePopulated = false;
 const API_BASE_URL =
   ["localhost", "127.0.0.1"].includes(window.location.hostname)
     ? "http://127.0.0.1:4000"
@@ -64,60 +63,15 @@ document.addEventListener("DOMContentLoaded", () => {
   coachInstruction.className = 'coach-instruction';
   coachInstruction.textContent = 'Click on player cards to view their schedule';
   
-  // Create filter controls to be moved above instruction
-  const filterControls = document.createElement('div');
-  filterControls.className = 'filter-controls-inline';
-  filterControls.innerHTML = `
-    <div class="filter-explanation">
-      <p>Select your preferred day and time to find available coaches</p>
-    </div>
-    <div class="filter-row-stacked">
-      <div class="filter-item">
-        <label for="day-select-inline">Day:</label>
-        <select id="day-select-inline">
-          <option value="">Select Day</option>
-          <option>Monday</option>
-          <option>Tuesday</option>
-          <option>Wednesday</option>
-          <option>Thursday</option>
-          <option>Friday</option>
-          <option>Saturday</option>
-          <option>Sunday</option>
-        </select>
-      </div>
-      
-      <div class="filter-item">
-        <label for="start-select-inline">Start Time:</label>
-        <select id="start-select-inline">
-          <option value="">Start Time</option>
-        </select>
-      </div>
-      
-      <span id="example-text-inline">e.g. "Thursdays starting at 2 PM"</span>
-    </div>
-  `;
-  
-  // Populate inline time dropdown
-  function populateInlineTimeDropdown() {
-    const startSelectInline = document.getElementById('start-select-inline');
-    if (startSelectInline) {
-      for (let h = 9; h <= 22; h++) {
-        const fmt = formatTime(h);
-        startSelectInline.options.add(new Option(fmt, h));
-      }
-      inlinePopulated = true;
-      
-    }
-  }
 
   sportSelectMain.addEventListener("change", () => {
     selectedSport = sportSelectMain.value;
     if (selectedSport) {
-      filterAndRender();
+      renderCoaches(coaches.filter(c => c.sport === selectedSport));
       renderServices(selectedSport);
       showSportSections();
     } else {
-      filterAndRender(); // This will call hideSportSections()
+      hideSportSections();
     }
   });
 
@@ -139,52 +93,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  // Main filter + render
-  function filterAndRender() {
-    const daySelectInline = document.getElementById('day-select-inline');
-    const startSelectInline = document.getElementById('start-select-inline');
-    const selectedDay = daySelectInline?.value || "";
-    const startT = startSelectInline?.value ? parseInt(startSelectInline.value) : "";
-    const selectedSport = document.getElementById("sport-select-main").value;
 
-    if (selectedSport === "") {
-      container.innerHTML = "";
-      hideSportSections();
-    } else {
-  
-      let filtered = coaches.filter(c => {
-        const matchesSport = c.sport === selectedSport;
-        if (!matchesSport) return false;
-
-        // If no day filter is selected, show all coaches for the sport
-        if (selectedDay === "") return true;
-        // Filter by day availability (exclude -1 values)
-        const hasDay = c.schedule?.[selectedDay] && 
-                      c.schedule[selectedDay].start !== -1 && c.schedule[selectedDay].end !== -1;
-        if (!hasDay) return false;
-        // If day is selected but no time filter, show coaches available that day
-        if (!startT) return true;
-
-        // Filter by time availability
-        const slot = c.schedule?.[selectedDay];
-        const matchesTime = slot && slot.start !== -1 && slot.end !== -1 && startT >= slot.start && startT < slot.end;
-        
-        return matchesTime;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = ""; 
-        const p = document.createElement('p');
-        p.className = 'no-results';
-        p.innerHTML = `
-          <strong>No coaches available at this time.</strong><br>
-        `;
-        container.appendChild(p);
-      } else {
-        renderCoaches(filtered);
-      }
-    }
-  }  
+  // Helper function to check if a coach has any availability during the week
+  function hasAvailability(coach) {
+    if (!coach.schedule) return false;
+    
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    return days.some(day => {
+      const daySchedule = coach.schedule[day];
+      return daySchedule && daySchedule.start !== -1 && daySchedule.end !== -1 && 
+             daySchedule.start !== null && daySchedule.end !== null &&
+             daySchedule.start !== undefined && daySchedule.end !== undefined;
+    });
+  }
 
   // Build the coach cards
   function renderCoaches(list) {
@@ -193,6 +114,12 @@ document.addEventListener("DOMContentLoaded", () => {
     list.forEach(coach => {
       const card = document.createElement("div");
       card.className = "coach-card";
+      
+      // Add shimmer class if coach has availability
+      if (hasAvailability(coach)) {
+        card.classList.add("has-availability");
+      }
+      
       card.style.backgroundImage = `url('${coach.image}')`;
 
       card.innerHTML = `
@@ -245,6 +172,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const coachSection = document.getElementById('coach-section');
     coachSection?.classList.remove('has-padding'); 
 
+    // Clear the coach container
+    container.innerHTML = "";
+
     const instruction = document.querySelector('.coach-instruction');
     if (instruction) instruction.remove();
     
@@ -259,35 +189,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const coachSection = document.getElementById('coach-section');
     coachSection?.classList.add('has-padding'); 
-
-    if (!document.querySelector('.filter-controls-inline')) {
-      const coachWrapper = coachSection.querySelector('.coach-wrapper');
-      coachSection.insertBefore(filterControls, coachWrapper);
-      
-      // Set up event listeners for inline controls
-      const daySelectInline = document.getElementById('day-select-inline');
-      const startSelectInline = document.getElementById('start-select-inline');
-      
-      daySelectInline.addEventListener('change', () => {
-        selectedDay = daySelectInline.value;
-        filterAndRender();
-      });
-      
-      startSelectInline.addEventListener('change', () => {
-        startT = startSelectInline.value ? parseInt(startSelectInline.value) : "";
-        filterAndRender();
-      });
-    }
     
     if (!document.querySelector('.coach-instruction')) {
       const coachWrapper = coachSection.querySelector('.coach-wrapper');
       coachSection.insertBefore(coachInstruction, coachWrapper);
     }
-
-    if(!inlinePopulated) {
-      populateInlineTimeDropdown();
-    }
-    
   }
   
   // Helper: format date display (Mon 7/1)
@@ -504,7 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("sport-select-main").value = autoSport;
     selectedSport = autoSport;
     showSportSections();
-    filterAndRender();
+    renderCoaches(coaches.filter(c => c.sport === autoSport));
 
     // Delay to ensure coaches render before finding match
     setTimeout(() => {
@@ -535,7 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Failed to load schedules from backend:", err);
     }
 
-    filterAndRender();
+    // Initial load complete
   })
     .catch(err => console.error("Error fetching coaches:", err));
 

@@ -84,13 +84,9 @@ cron.schedule('1 0 * * *', async () => {
     const currentDayName = dayNames[currentDay];
     
     // Reset all coaches' current day availability to (-1, -1)
+    // This will create the day structure if it doesn't exist, or update it if it does
     const result = await Coach.updateMany(
-      {
-        $or: [
-          { [`schedule.${currentDayName}.start`]: { $ne: -1 } },
-          { [`schedule.${currentDayName}.end`]: { $ne: -1 } }
-        ]
-      },
+      {},  // Update ALL coaches, regardless of current state
       {
         $set: {
           [`schedule.${currentDayName}.start`]: -1,
