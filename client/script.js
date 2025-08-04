@@ -111,6 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderCoaches(list) {
     container.innerHTML = "";
 
+    // Check if any coaches have availability - if none do, show popup
+    if (list.length > 0 && !hasAnyAvailableCoaches(list)) {
+      showNoCoachesPopup(selectedSport);
+    }
+
     list.forEach(coach => {
       const card = document.createElement("div");
       card.className = "coach-card";
@@ -161,6 +166,44 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       container.appendChild(div);
     });
+  }
+
+  // Show no coaches available popup
+  function showNoCoachesPopup(sport) {
+    const sportNames = {
+      baseball: "Baseball",
+      girlsSoccer: "Girls Soccer", 
+      football: "Football",
+      boysLax: "Boys Lacrosse",
+      softball: "Softball",
+      boysBasketball: "Boys Basketball",
+      fieldHockey: "Field Hockey"
+    };
+
+    const popup = document.createElement('div');
+    popup.className = 'no-coaches-modal';
+    popup.innerHTML = `
+      <div class="no-coaches-content">
+        <button class="close-btn">&times;</button>
+        <h3>No Coaches Available</h3>
+        <p>There are currently no coaches with availability for <strong>${sportNames[sport] || sport}</strong>.</p>
+        <p>Please check back later or contact us for more information.</p>
+      </div>
+    `;
+
+    // Close popup when clicking X or outside
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup || e.target.classList.contains('close-btn')) {
+        document.body.removeChild(popup);
+      }
+    });
+
+    document.body.appendChild(popup);
+  }
+
+  // Check if any coaches in a list have availability
+  function hasAnyAvailableCoaches(coachList) {
+    return coachList.some(coach => hasAvailability(coach));
   }
 
   // hide and show coach cards for different sports
