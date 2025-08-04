@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button class="close-btn">&times;</button>
         <h3>No Coaches Available</h3>
         <p>There are currently no coaches with availability for <strong>${sportNames[sport] || sport}</strong>.</p>
-        <p>Please check back later or contact us for more information.</p>
+        <p>Please check back later or contact <a href="tel:+19086454602">(908) 645-4602</a> for more information about coach availability.</p>
       </div>
     `;
 
