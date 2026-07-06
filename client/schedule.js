@@ -80,30 +80,35 @@ let sortedCoaches = [];
 
 async function loadCoachesAndSchedules() {
   try {
-    // Fetch coaches from gist (main data)
-    const coachesResponse = await fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json");
-    const coachesData = await coachesResponse.json();
+    // Fetch coaches from API (now stored in database instead of Gist)
+    let coachesData;
+    try {
+      const coachesResponse = await fetch(`${API_BASE_URL}/api/coach/all`);
+      if (!coachesResponse.ok) throw new Error('API fetch failed');
+      coachesData = await coachesResponse.json();
+    } catch (apiErr) {
+      // Fallback to Gist if API fails (for backwards compatibility during migration)
+      console.warn("API fetch failed, falling back to Gist:", apiErr);
+      const gistResponse = await fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json");
+      coachesData = await gistResponse.json();
 
-    // Fetch schedules from backend
-    const schedulesResponse = await fetch(`${API_BASE_URL}/api/coach/schedules`);
-    const schedulesData = await schedulesResponse.json();
+      // If using Gist, we still need to fetch schedules
+      const schedulesResponse = await fetch(`${API_BASE_URL}/api/coach/schedules`);
+      const schedulesData = await schedulesResponse.json();
 
-    // Create a map of schedules keyed by coach name for quick lookup
-    const scheduleMap = {};
-    schedulesData.forEach(item => {
-      scheduleMap[item.name] = item.schedule;
-    });
+      const scheduleMap = {};
+      schedulesData.forEach(item => {
+        scheduleMap[item.name] = item.schedule;
+      });
 
-    // Merge schedules into coaches data
-    const mergedCoaches = coachesData.map(coach => {
-      return {
+      coachesData = coachesData.map(coach => ({
         ...coach,
-        schedule: scheduleMap[coach.name] || {}  // empty object if no schedule found
-      };
-    });
+        schedule: scheduleMap[coach.name] || {}
+      }));
+    }
 
     // Sort coaches alphabetically by name
-    sortedCoaches = mergedCoaches.sort((a, b) => a.name.localeCompare(b.name));
+    sortedCoaches = coachesData.sort((a, b) => a.name.localeCompare(b.name));
 
     // Clear coachSelect options and repopulate
     coachSelect.innerHTML = '<option value="">Select a coach</option>';

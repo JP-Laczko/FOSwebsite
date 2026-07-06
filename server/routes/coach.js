@@ -1,8 +1,45 @@
 import express from "express";
-import Coach from "../models/Coach.js"; 
+import Coach from "../models/Coach.js";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const router = express.Router();
 import bcrypt from 'bcrypt';
+
+// Setup for ES modules to get __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Save to client/Images folder
+    const uploadPath = path.join(__dirname, '../../client/Images');
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename: timestamp-originalname
+    const uniqueName = Date.now() + '-' + file.originalname.replace(/\s+/g, '_');
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: function (req, file, cb) {
+    // Only allow image files
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files are allowed (jpeg, jpg, png, gif, webp)'));
+  }
+});
 
 // Utility function to reset current day to -1 after midnight
 async function resetPastDaysAvailability(coach) {
@@ -245,16 +282,16 @@ router.post('/dev/fix-availability-data', async (req, res) => {
   if (process.env.NODE_ENV === 'production') {
     return res.status(404).json({ error: 'Not available in production' });
   }
-  
+
   try {
     const coaches = await Coach.find({});
     const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     let updatedCount = 0;
-    
+
     for (const coach of coaches) {
       let hasUpdates = false;
       const updates = {};
-      
+
       // Initialize missing days that should exist but don't
       for (const dayName of dayNames) {
         if (!coach.schedule || !coach.schedule[dayName]) {
@@ -262,20 +299,269 @@ router.post('/dev/fix-availability-data', async (req, res) => {
           continue;
         }
       }
-      
+
       if (hasUpdates) {
         await Coach.findByIdAndUpdate(coach._id, { $set: updates });
         updatedCount++;
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: `Fixed availability data for ${updatedCount} coaches`,
       totalCoaches: coaches.length
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fix availability data" });
+  }
+});
+
+// ============================================
+// ADMIN COACH MANAGEMENT ENDPOINTS
+// ============================================
+
+// Middleware to check admin session
+function requireAdmin(req, res, next) {
+  if (req.session && req.session.isAdmin) {
+    return next();
+  }
+  res.status(401).json({ message: 'Admin authentication required' });
+}
+
+// POST upload coach image (admin)
+router.post('/admin/upload-image', requireAdmin, (req, res) => {
+  upload.single('image')(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
+      }
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Return the path relative to the client folder
+    const imagePath = 'Images/' + req.file.filename;
+    res.json({
+      message: 'Image uploaded successfully',
+      imagePath: imagePath
+    });
+  });
+});
+
+// GET all coaches (full data for admin)
+router.get('/admin/all', requireAdmin, async (req, res) => {
+  try {
+    const coaches = await Coach.find({}).select('-password').sort({ name: 1 });
+    res.json(coaches);
+  } catch (err) {
+    console.error('Error fetching coaches:', err);
+    res.status(500).json({ error: 'Failed to fetch coaches' });
+  }
+});
+
+// GET all coaches (public - for frontend to replace Gist)
+router.get('/all', async (req, res) => {
+  try {
+    const coaches = await Coach.find({}).select('-password -username').sort({ name: 1 });
+    res.json(coaches);
+  } catch (err) {
+    console.error('Error fetching coaches:', err);
+    res.status(500).json({ error: 'Failed to fetch coaches' });
+  }
+});
+
+// GET single coach by ID (admin)
+router.get('/admin/:id', requireAdmin, async (req, res) => {
+  try {
+    const coach = await Coach.findById(req.params.id).select('-password');
+    if (!coach) {
+      return res.status(404).json({ error: 'Coach not found' });
+    }
+    res.json(coach);
+  } catch (err) {
+    console.error('Error fetching coach:', err);
+    res.status(500).json({ error: 'Failed to fetch coach' });
+  }
+});
+
+// POST create new coach (admin)
+router.post('/admin/create', requireAdmin, async (req, res) => {
+  try {
+    const { username, password, name, sport, position, school, achievement, bio, image, email, instagram, available } = req.body;
+
+    // Validate required fields
+    if (!username || !password || !name || !sport) {
+      return res.status(400).json({ error: 'Username, password, name, and sport are required' });
+    }
+
+    // Check if username or name already exists
+    const existingCoach = await Coach.findOne({ $or: [{ username }, { name }] });
+    if (existingCoach) {
+      return res.status(400).json({ error: 'A coach with this username or name already exists' });
+    }
+
+    const newCoach = new Coach({
+      username,
+      password, // Note: In production, you should hash this
+      name,
+      sport,
+      position: position || '',
+      school: school || '',
+      achievement: achievement || '',
+      bio: bio || { text: '', performance: {} },
+      image: image || '',
+      email: email || '',
+      instagram: instagram || '',
+      available: available || 'yes'
+    });
+
+    await newCoach.save();
+
+    // Return coach without password
+    const savedCoach = await Coach.findById(newCoach._id).select('-password');
+    res.status(201).json(savedCoach);
+  } catch (err) {
+    console.error('Error creating coach:', err);
+    res.status(500).json({ error: 'Failed to create coach' });
+  }
+});
+
+// PATCH update coach (admin)
+router.patch('/admin/:id', requireAdmin, async (req, res) => {
+  try {
+    const { username, password, name, sport, position, school, achievement, bio, image, email, instagram, available } = req.body;
+
+    const coach = await Coach.findById(req.params.id);
+    if (!coach) {
+      return res.status(404).json({ error: 'Coach not found' });
+    }
+
+    // Check if new username or name conflicts with another coach
+    if (username && username !== coach.username) {
+      const existingUsername = await Coach.findOne({ username, _id: { $ne: req.params.id } });
+      if (existingUsername) {
+        return res.status(400).json({ error: 'Username already taken' });
+      }
+      coach.username = username;
+    }
+
+    if (name && name !== coach.name) {
+      const existingName = await Coach.findOne({ name, _id: { $ne: req.params.id } });
+      if (existingName) {
+        return res.status(400).json({ error: 'Coach name already exists' });
+      }
+      coach.name = name;
+    }
+
+    // Update fields if provided
+    if (password) coach.password = password;
+    if (sport) coach.sport = sport;
+    if (position !== undefined) coach.position = position;
+    if (school !== undefined) coach.school = school;
+    if (achievement !== undefined) coach.achievement = achievement;
+    if (bio !== undefined) coach.bio = bio;
+    if (image !== undefined) coach.image = image;
+    if (email !== undefined) coach.email = email;
+    if (instagram !== undefined) coach.instagram = instagram;
+    if (available !== undefined) coach.available = available;
+
+    await coach.save();
+
+    const updatedCoach = await Coach.findById(req.params.id).select('-password');
+    res.json(updatedCoach);
+  } catch (err) {
+    console.error('Error updating coach:', err);
+    res.status(500).json({ error: 'Failed to update coach' });
+  }
+});
+
+// DELETE coach (admin)
+router.delete('/admin/:id', requireAdmin, async (req, res) => {
+  try {
+    const coach = await Coach.findByIdAndDelete(req.params.id);
+    if (!coach) {
+      return res.status(404).json({ error: 'Coach not found' });
+    }
+    res.json({ message: 'Coach deleted successfully', deletedCoach: coach.name });
+  } catch (err) {
+    console.error('Error deleting coach:', err);
+    res.status(500).json({ error: 'Failed to delete coach' });
+  }
+});
+
+// POST import coaches from Gist (admin - one-time migration)
+router.post('/admin/import-from-gist', requireAdmin, async (req, res) => {
+  try {
+    const gistUrl = 'https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json';
+
+    const response = await fetch(gistUrl);
+    if (!response.ok) {
+      throw new Error('Failed to fetch Gist data');
+    }
+
+    const gistCoaches = await response.json();
+
+    let imported = 0;
+    let skipped = 0;
+    let updated = 0;
+
+    for (const gistCoach of gistCoaches) {
+      // Check if coach already exists by name
+      const existingCoach = await Coach.findOne({ name: gistCoach.name });
+
+      if (existingCoach) {
+        // Update existing coach with Gist data (but keep credentials and schedule)
+        existingCoach.sport = gistCoach.sport || existingCoach.sport;
+        existingCoach.position = gistCoach.position || existingCoach.position;
+        existingCoach.school = gistCoach.school || existingCoach.school;
+        existingCoach.achievement = gistCoach.achievement || existingCoach.achievement;
+        existingCoach.bio = gistCoach.bio || existingCoach.bio;
+        existingCoach.image = gistCoach.image || existingCoach.image;
+        existingCoach.email = gistCoach.email || existingCoach.email;
+        existingCoach.instagram = gistCoach.instagram || existingCoach.instagram;
+        existingCoach.available = gistCoach.available || existingCoach.available;
+        await existingCoach.save();
+        updated++;
+      } else {
+        // Create new coach with default credentials
+        const username = gistCoach.name.toLowerCase().replace(/\s+/g, '_');
+        const defaultPassword = 'changeme123'; // They should change this
+
+        const newCoach = new Coach({
+          username,
+          password: defaultPassword,
+          name: gistCoach.name,
+          sport: gistCoach.sport || 'baseball',
+          position: gistCoach.position || '',
+          school: gistCoach.school || '',
+          achievement: gistCoach.achievement || '',
+          bio: gistCoach.bio || { text: '', performance: {} },
+          image: gistCoach.image || '',
+          email: gistCoach.email || '',
+          instagram: gistCoach.instagram || '',
+          available: gistCoach.available || 'yes'
+        });
+
+        await newCoach.save();
+        imported++;
+      }
+    }
+
+    res.json({
+      message: 'Import completed',
+      imported,
+      updated,
+      skipped,
+      total: gistCoaches.length
+    });
+  } catch (err) {
+    console.error('Error importing from Gist:', err);
+    res.status(500).json({ error: 'Failed to import coaches from Gist' });
   }
 });
 

@@ -2273,12 +2273,380 @@ input[type="number"] {
       align-items: stretch;
       gap: 0.5rem;
     }
-    
+
     .filter-row select {
       width: 100%;
     }
 
   }
 
-  
+  /* ============================================
+     ADMIN COACH MANAGEMENT STYLES
+     ============================================ */
+
+  .admin-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0 2rem 0;
+    padding: 0 1rem;
+  }
+
+  .tab-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid #0077cc;
+    background: white;
+    color: #0077cc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tab-btn:hover {
+    background: #e6f3ff;
+  }
+
+  .tab-btn.active {
+    background: #0077cc;
+    color: white;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .coaches-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto 1.5rem auto;
+    padding: 0 1rem;
+  }
+
+  .coaches-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 1.8rem;
+  }
+
+  .coaches-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
+
+  .btn-danger {
+    background: #dc3545;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+  }
+
+  .btn-danger:hover {
+    background: #c82333;
+  }
+
+  #coaches-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  #coaches-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  #coaches-table th,
+  #coaches-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+
+  #coaches-table th {
+    background: #0077cc;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  #coaches-table tr:hover {
+    background: #f8f9fa;
+  }
+
+  #coaches-table .action-btns {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  #coaches-table .action-btns button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    min-height: auto;
+    min-width: auto;
+  }
+
+  .edit-btn {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .edit-btn:hover {
+    background: #138496;
+  }
+
+  .delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .delete-btn:hover {
+    background: #c82333;
+  }
+
+  .status-yes {
+    color: #28a745;
+    font-weight: 600;
+  }
+
+  .status-no {
+    color: #dc3545;
+    font-weight: 600;
+  }
+
+  /* Coach Modal Styles */
+  .coach-modal-content {
+    max-width: 700px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .coach-modal-content h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full-width {
+    width: 100%;
+  }
+
+  .form-group label {
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    height: 42px;
+  }
+
+  .form-group textarea {
+    height: auto;
+  }
+
+  .form-row {
+    align-items: flex-end;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #0077cc;
+    box-shadow: 0 0 0 2px rgba(0, 119, 204, 0.2);
+  }
+
+  .form-group small {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .image-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .image-upload-container input[type="file"] {
+    height: auto;
+    padding: 0.5rem;
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #f9f9f9;
+  }
+
+  .image-upload-container input[type="file"]:hover {
+    border-color: #0077cc;
+    background: #f0f7ff;
+  }
+
+  .image-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    background: #e8f5e9;
+    border-radius: 6px;
+    border: 1px solid #a5d6a7;
+  }
+
+  .image-preview img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  .image-preview span {
+    color: #2e7d32;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  #upload-status {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  #upload-status.uploading {
+    color: #0077cc;
+  }
+
+  #upload-status.error {
+    color: #dc3545;
+  }
+
+  #upload-status.success {
+    color: #28a745;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+
+  .delete-modal-content {
+    max-width: 400px;
+    text-align: center;
+  }
+
+  .delete-modal-content h2 {
+    color: #dc3545;
+  }
+
+  .warning-text {
+    color: #dc3545;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .coaches-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .coaches-actions {
+      width: 100%;
+    }
+
+    .coaches-actions button {
+      flex: 1;
+    }
+
+    #coaches-table {
+      font-size: 0.85rem;
+    }
+
+    #coaches-table th,
+    #coaches-table td {
+      padding: 0.6rem 0.4rem;
+    }
+
+    #coaches-table .action-btns {
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .admin-tabs {
+      flex-direction: column;
+    }
+
+    .tab-btn {
+      width: 100%;
+    }
+  }
+
+
   

@@ -462,30 +462,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 200);
   }
 
-  // Load data 
-  fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")  .then(async res => {
-    if (!res.ok) throw new Error(`Gist fetch failed: ${res.status}`);
-    const data = await res.json();
-    coaches = data;
+  // Load data from API (coaches now stored in database instead of Gist)
+  fetch(`${API_BASE_URL}/api/coach/all`)
+    .then(async res => {
+      if (!res.ok) throw new Error(`Coach fetch failed: ${res.status}`);
+      const data = await res.json();
+      coaches = data;
+      // Coaches from API already include schedule data, no need to merge
+      // Initial load complete
+    })
+    .catch(err => {
+      console.error("Error fetching coaches:", err);
+      // Fallback to Gist if API fails (for backwards compatibility during migration)
+      fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
+        .then(async res => {
+          if (!res.ok) throw new Error(`Gist fetch failed: ${res.status}`);
+          const data = await res.json();
+          coaches = data;
 
-    try {
-      const scheduleRes = await fetch(`${API_BASE_URL}/api/coach/schedules`);
-      if (!scheduleRes.ok) throw new Error(`Schedule fetch failed: ${scheduleRes.status}`);
-      const scheduleData = await scheduleRes.json();
+          try {
+            const scheduleRes = await fetch(`${API_BASE_URL}/api/coach/schedules`);
+            if (!scheduleRes.ok) throw new Error(`Schedule fetch failed: ${scheduleRes.status}`);
+            const scheduleData = await scheduleRes.json();
 
-      // Merge backend schedules into Gist coach data
-      coaches.forEach(c => {
-        const match = scheduleData.find(s => s.name === c.name);
-        if (match) {
-          c.schedule = match.schedule;
-        }
-      });
-    } catch (err) {
-      console.error("Failed to load schedules from backend:", err);
-    }
-
-    // Initial load complete
-  })
-    .catch(err => console.error("Error fetching coaches:", err));
+            // Merge backend schedules into Gist coach data
+            coaches.forEach(c => {
+              const match = scheduleData.find(s => s.name === c.name);
+              if (match) {
+                c.schedule = match.schedule;
+              }
+            });
+          } catch (err) {
+            console.error("Failed to load schedules from backend:", err);
+          }
+        })
+        .catch(err => console.error("Error fetching from Gist fallback:", err));
+    });
 
 });

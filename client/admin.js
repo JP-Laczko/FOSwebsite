@@ -298,10 +298,12 @@ saveBtn.addEventListener("click", async () => {
   }
 
   function loadCoaches(selectElement) {
-    const coachSelect = document.getElementById("admin-coach-select");
-
-    return fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
-      .then((res) => res.json())
+    // Fetch coaches from API (now stored in database instead of Gist)
+    return fetch(`${API_BASE_URL}/api/coach/all`, { credentials: 'include' })
+      .then((res) => {
+        if (!res.ok) throw new Error('API fetch failed');
+        return res.json();
+      })
       .then((data) => {
         const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
         selectElement.innerHTML = '<option value="">Select a coach</option>';
@@ -317,8 +319,28 @@ saveBtn.addEventListener("click", async () => {
         });
       })
       .catch((err) => {
-        console.error("❌ Error loading coaches:", err);
-        coachSelect.innerHTML = '<option value="">Error loading coaches</option>';
+        console.error("API fetch failed, trying Gist fallback:", err);
+        // Fallback to Gist if API fails
+        return fetch("https://gist.githubusercontent.com/JP-Laczko/6f6eb1038b031d4a217340edcb0d7d5c/raw/coaches.json")
+          .then((res) => res.json())
+          .then((data) => {
+            const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
+            selectElement.innerHTML = '<option value="">Select a coach</option>';
+
+            sorted.forEach((coach) => {
+              if (coach.available === "yes") {
+                const option = document.createElement("option");
+                option.value = coach.name;
+                const sportName = sportNames?.[coach.sport] || "No Sport";
+                option.textContent = `${coach.name} (${sportName})`;
+                selectElement.appendChild(option);
+              }
+            });
+          })
+          .catch((fallbackErr) => {
+            console.error("❌ Error loading coaches from fallback:", fallbackErr);
+            selectElement.innerHTML = '<option value="">Error loading coaches</option>';
+          });
       });
   }
 
@@ -429,7 +451,7 @@ saveBtn.addEventListener("click", async () => {
       console.log('Lesson counts data:', data);
       const tableBody = document.getElementById("lesson-counts-body");
       tableBody.innerHTML = "";
-  
+
       data.forEach((entry, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -444,5 +466,330 @@ saveBtn.addEventListener("click", async () => {
       console.error("Error loading lesson counts:", err);
     }
   }
-  
+
+  // ============================================
+  // COACH MANAGEMENT
+  // ============================================
+
+  let coachToDelete = null;
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active from all tabs and contents
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      // Activate clicked tab
+      btn.classList.add('active');
+      const tabId = btn.dataset.tab;
+      document.getElementById(tabId).classList.add('active');
+
+      // Load coaches when switching to coaches tab
+      if (tabId === 'coaches-tab') {
+        loadCoachesTable();
+      }
+    });
+  });
+
+  // Load coaches table
+  async function loadCoachesTable() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/coach/admin/all`, {
+        credentials: 'include'
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch coaches');
+
+      const coaches = await res.json();
+      const tbody = document.getElementById('coaches-table-body');
+      tbody.innerHTML = '';
+
+      coaches.forEach(coach => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${coach.name}</td>
+          <td>${sportNames[coach.sport] || coach.sport}</td>
+          <td>${coach.school || '-'}</td>
+          <td>${coach.username}</td>
+          <td class="${coach.available === 'yes' ? 'status-yes' : 'status-no'}">
+            ${coach.available === 'yes' ? 'Yes' : 'No'}
+          </td>
+          <td class="action-btns">
+            <button class="edit-btn" data-id="${coach._id}">Edit</button>
+            <button class="delete-btn" data-id="${coach._id}" data-name="${coach.name}">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Attach edit listeners
+      tbody.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => openEditCoachModal(btn.dataset.id));
+      });
+
+      // Attach delete listeners
+      tbody.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => openDeleteModal(btn.dataset.id, btn.dataset.name));
+      });
+
+    } catch (err) {
+      console.error('Error loading coaches:', err);
+      alert('Failed to load coaches');
+    }
+  }
+
+  // Add coach button
+  document.getElementById('add-coach-btn').addEventListener('click', () => {
+    openAddCoachModal();
+  });
+
+  // Import from Gist button
+  document.getElementById('import-gist-btn').addEventListener('click', async () => {
+    if (!confirm('This will import all coaches from the Gist. Existing coaches will be updated. Continue?')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/coach/admin/import-from-gist`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Import failed');
+
+      alert(`Import complete!\nImported: ${data.imported}\nUpdated: ${data.updated}\nTotal: ${data.total}`);
+      loadCoachesTable();
+    } catch (err) {
+      console.error('Import error:', err);
+      alert('Import failed: ' + err.message);
+    }
+  });
+
+  // Open add coach modal
+  function openAddCoachModal() {
+    document.getElementById('coach-modal-title').textContent = 'Add New Coach';
+    document.getElementById('coach-form').reset();
+    document.getElementById('coach-id').value = '';
+    document.getElementById('coach-image').value = '';
+    document.getElementById('coach-password').required = true;
+    document.getElementById('coach-password').placeholder = 'Enter password';
+    document.getElementById('password-hint').classList.add('hidden');
+    // Clear image preview
+    document.getElementById('image-preview').classList.add('hidden');
+    document.getElementById('upload-status').textContent = '';
+    document.getElementById('upload-status').className = '';
+    document.getElementById('coach-modal').classList.remove('hidden');
+  }
+
+  // Open edit coach modal
+  async function openEditCoachModal(coachId) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/coach/admin/${coachId}`, {
+        credentials: 'include'
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch coach');
+
+      const coach = await res.json();
+
+      document.getElementById('coach-modal-title').textContent = 'Edit Coach';
+      document.getElementById('coach-id').value = coach._id;
+      document.getElementById('coach-name').value = coach.name || '';
+      document.getElementById('coach-sport').value = coach.sport || '';
+      document.getElementById('coach-username').value = coach.username || '';
+      document.getElementById('coach-password').value = '';
+      document.getElementById('coach-password').required = false;
+      document.getElementById('coach-password').placeholder = 'Leave blank to keep current';
+      document.getElementById('password-hint').classList.remove('hidden');
+      document.getElementById('coach-position').value = coach.position || '';
+      document.getElementById('coach-school').value = coach.school || '';
+      document.getElementById('coach-achievement').value = coach.achievement || '';
+      document.getElementById('coach-available').value = coach.available || 'yes';
+      document.getElementById('coach-email').value = coach.email || '';
+      document.getElementById('coach-instagram').value = coach.instagram || '';
+      document.getElementById('coach-image').value = coach.image || '';
+      document.getElementById('coach-bio').value = coach.bio?.text || '';
+
+      // Show existing image preview if there is one
+      const previewEl = document.getElementById('image-preview');
+      const previewImg = document.getElementById('preview-img');
+      const pathDisplay = document.getElementById('image-path-display');
+      const statusEl = document.getElementById('upload-status');
+
+      if (coach.image) {
+        previewImg.src = coach.image;
+        pathDisplay.textContent = coach.image;
+        previewEl.classList.remove('hidden');
+        statusEl.textContent = 'Current image (upload new to replace)';
+        statusEl.className = '';
+      } else {
+        previewEl.classList.add('hidden');
+        statusEl.textContent = '';
+        statusEl.className = '';
+      }
+
+      document.getElementById('coach-modal').classList.remove('hidden');
+
+    } catch (err) {
+      console.error('Error fetching coach:', err);
+      alert('Failed to load coach data');
+    }
+  }
+
+  // Close coach modal
+  document.getElementById('coach-modal-close').addEventListener('click', () => {
+    document.getElementById('coach-modal').classList.add('hidden');
+  });
+
+  document.getElementById('coach-cancel-btn').addEventListener('click', () => {
+    document.getElementById('coach-modal').classList.add('hidden');
+  });
+
+  // Handle image file upload
+  document.getElementById('coach-image-file').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const statusEl = document.getElementById('upload-status');
+    const previewEl = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    const pathDisplay = document.getElementById('image-path-display');
+    const hiddenInput = document.getElementById('coach-image');
+
+    // Show uploading status
+    statusEl.textContent = 'Uploading...';
+    statusEl.className = 'uploading';
+    previewEl.classList.add('hidden');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const res = await fetch(`${API_BASE_URL}/api/coach/admin/upload-image`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      // Success - show preview and set hidden input
+      hiddenInput.value = data.imagePath;
+      previewImg.src = data.imagePath;
+      pathDisplay.textContent = data.imagePath;
+      previewEl.classList.remove('hidden');
+      statusEl.textContent = 'Uploaded successfully!';
+      statusEl.className = 'success';
+
+    } catch (err) {
+      console.error('Upload error:', err);
+      statusEl.textContent = 'Upload failed: ' + err.message;
+      statusEl.className = 'error';
+    }
+  });
+
+  // Submit coach form
+  document.getElementById('coach-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const coachId = document.getElementById('coach-id').value;
+    const isEditing = !!coachId;
+
+    const coachData = {
+      name: document.getElementById('coach-name').value.trim(),
+      sport: document.getElementById('coach-sport').value,
+      username: document.getElementById('coach-username').value.trim(),
+      position: document.getElementById('coach-position').value.trim(),
+      school: document.getElementById('coach-school').value.trim(),
+      achievement: document.getElementById('coach-achievement').value.trim(),
+      available: document.getElementById('coach-available').value,
+      email: document.getElementById('coach-email').value.trim(),
+      instagram: document.getElementById('coach-instagram').value.trim(),
+      image: document.getElementById('coach-image').value.trim(),
+      bio: { text: document.getElementById('coach-bio').value.trim(), performance: {} }
+    };
+
+    const password = document.getElementById('coach-password').value;
+    if (password) {
+      coachData.password = password;
+    }
+
+    try {
+      let res;
+      if (isEditing) {
+        res = await fetch(`${API_BASE_URL}/api/coach/admin/${coachId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(coachData)
+        });
+      } else {
+        if (!password) {
+          alert('Password is required for new coaches');
+          return;
+        }
+        res = await fetch(`${API_BASE_URL}/api/coach/admin/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(coachData)
+        });
+      }
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Save failed');
+
+      alert(isEditing ? 'Coach updated successfully!' : 'Coach created successfully!');
+      document.getElementById('coach-modal').classList.add('hidden');
+      loadCoachesTable();
+
+    } catch (err) {
+      console.error('Save error:', err);
+      alert('Failed to save coach: ' + err.message);
+    }
+  });
+
+  // Open delete modal
+  function openDeleteModal(coachId, coachName) {
+    coachToDelete = coachId;
+    document.getElementById('delete-coach-name').textContent = coachName;
+    document.getElementById('delete-coach-modal').classList.remove('hidden');
+  }
+
+  // Delete modal buttons
+  document.getElementById('delete-cancel-btn').addEventListener('click', () => {
+    document.getElementById('delete-coach-modal').classList.add('hidden');
+    coachToDelete = null;
+  });
+
+  document.getElementById('delete-confirm-btn').addEventListener('click', async () => {
+    if (!coachToDelete) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/coach/admin/${coachToDelete}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Delete failed');
+
+      alert('Coach deleted successfully!');
+      document.getElementById('delete-coach-modal').classList.add('hidden');
+      coachToDelete = null;
+      loadCoachesTable();
+
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete coach: ' + err.message);
+    }
+  });
+
 });
