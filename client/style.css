@@ -7,6 +7,8 @@ body {
     color: #333;
     background: linear-gradient(to right, #0f2027, #203a43, #2c5364); /* deep blue gradient */
     box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
    }
   
   .navbar {
@@ -436,13 +438,14 @@ body {
   
   /* Main content */
   .main-content {
-    margin-left: 0; 
+    margin-left: 0;
     background: linear-gradient(to right, #0f2027, #203a43, #2c5364); /* deep blue gradient */
     box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     transition: margin-left 0.3s ease;
+    flex: 1;
   }
 
   .hero-content {
@@ -983,6 +986,7 @@ body {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
+    flex: 1;
   }
   
   .contact-heading {
@@ -1414,6 +1418,10 @@ body {
   
   button:hover {
     background-color: #005fa3;
+  }
+
+  .story-section {
+    flex: 1;
   }
 
   .story-section .container {
@@ -2583,18 +2591,19 @@ input[type="number"] {
     color: #28a745;
   }
 
-  /* Site Footer */
+  /* Site Footer - Sticky at bottom */
   .site-footer {
     background: #003366;
     color: #fff;
     text-align: center;
-    padding: 1.5rem 1rem;
-    margin-top: 2rem;
+    padding: 1rem;
+    margin-top: auto;
+    width: 100%;
   }
 
   .site-footer p {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .site-footer a {
