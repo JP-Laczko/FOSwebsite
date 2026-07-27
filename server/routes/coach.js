@@ -1,40 +1,29 @@
 import express from "express";
 import Coach from "../models/Coach.js";
 import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 import bcrypt from 'bcrypt';
 
-// Setup for ES modules to get __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // Save to client/Images folder
-    const uploadPath = path.join(__dirname, '../../client/Images');
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    // Create unique filename: timestamp-originalname
-    const uniqueName = Date.now() + '-' + file.originalname.replace(/\s+/g, '_');
-    cb(null, uniqueName);
-  }
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Configure multer for memory storage (upload to Cloudinary)
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: function (req, file, cb) {
-    // Only allow image files
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-
-    if (extname && mimetype) {
+    if (mimetype) {
       return cb(null, true);
     }
     cb(new Error('Only image files are allowed (jpeg, jpg, png, gif, webp)'));
@@ -328,9 +317,9 @@ function requireAdmin(req, res, next) {
   res.status(401).json({ message: 'Admin authentication required' });
 }
 
-// POST upload coach image (admin)
+// POST upload coach image (admin) - uploads to Cloudinary
 router.post('/admin/upload-image', requireAdmin, (req, res) => {
-  upload.single('image')(req, res, function (err) {
+  upload.single('image')(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
@@ -344,12 +333,30 @@ router.post('/admin/upload-image', requireAdmin, (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Return the path relative to the client folder
-    const imagePath = 'Images/' + req.file.filename;
-    res.json({
-      message: 'Image uploaded successfully',
-      imagePath: imagePath
-    });
+    try {
+      // Upload to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'fos-coaches',
+            resource_type: 'image'
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(req.file.buffer);
+      });
+
+      res.json({
+        message: 'Image uploaded successfully',
+        imagePath: result.secure_url
+      });
+    } catch (uploadErr) {
+      console.error('Cloudinary upload error:', uploadErr);
+      res.status(500).json({ error: 'Failed to upload image' });
+    }
   });
 });
 
