@@ -147,8 +147,11 @@ async function loadCoachesAndSchedules() {
     updatePriceSummary(num);
   });  
 
-  // Replace with your real test publishable key
-  const stripe = Stripe("pk_live_51RhcLVFDRjshSt4o8kFidcq1p2YVMsycAVJygU8UcRyRMSS7wg5gxIUtHGVpW1fa568sCYNzxuoDuiJy8tVm7ndE004Io4IXXM"); // Publishable Key
+  // Use test key on localhost, live key in production
+  const stripeKey = ["localhost", "127.0.0.1"].includes(window.location.hostname)
+    ? "pk_test_51RhcLVFDRjshSt4oFlXyDb5gy0vfACfSpPFEjFjIt5SKyeefI07remfCgOJXhsYeMgijUxeoK0CpkdiLGKzldBJH00oIG5Kgkj"
+    : "pk_live_51RhcLVFDRjshSt4o8kFidcq1p2YVMsycAVJygU8UcRyRMSS7wg5gxIUtHGVpW1fa568sCYNzxuoDuiJy8tVm7ndE004Io4IXXM";
+  const stripe = Stripe(stripeKey);
   const elements = stripe.elements();
   const card = elements.create("card");
   card.mount("#card-element");

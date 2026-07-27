@@ -6,7 +6,13 @@ import express from 'express';
 import Stripe from 'stripe';
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Use test key in development, live key in production
+const stripeKey = process.env.NODE_ENV === 'production'
+  ? process.env.STRIPE_SECRET_KEY
+  : (process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_SECRET_KEY);
+
+const stripe = new Stripe(stripeKey);
 
 router.post('/create-intent', async (req, res) => {
     const { amount } = req.body;
