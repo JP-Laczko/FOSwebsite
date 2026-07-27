@@ -291,38 +291,71 @@ async function loadCoachesAndSchedules() {
       } 
 
       if (result.paymentIntent.status === "succeeded") {
-  
-        await emailjs.send("service_b2jlk03", "template_wfpkvcf", {
-          guardian_name: guardianName,
-          user_email: email,user_phone: user_phone,
-          coach: coach,
-          coach_email: coach_email,
-          formatted_date: formattedDate,
-          formatted_time: formattedTime,
-          message: message
-        });
-    
-        // 3. After email success, save booking in DB 
-        await fetch(`${API_BASE_URL}/api/bookings`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            coach,
-            guardianName,
-            athleteName: name,
-            numPlayers,
-            date: rawDate.toISOString(),
-            startTime: time,
-            notes: message
-          })
-        });
-    
-        alert("Your request was sent successfully!");
+        // Payment succeeded - now save booking and send email
+        // These should not fail, but if they do, payment already went through
+
+        let bookingSaved = false;
+        let emailSent = false;
+
+        // 1. Save booking to DB FIRST (most important)
+        try {
+          const bookingRes = await fetch(`${API_BASE_URL}/api/bookings`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              coach,
+              guardianName,
+              athleteName: name,
+              numPlayers,
+              date: rawDate.toISOString(),
+              startTime: time,
+              notes: message
+            })
+          });
+
+          if (!bookingRes.ok) {
+            const errText = await bookingRes.text();
+            console.error("Booking save failed:", errText);
+          } else {
+            bookingSaved = true;
+            console.log("Booking saved successfully");
+          }
+        } catch (bookingErr) {
+          console.error("Booking save error:", bookingErr);
+        }
+
+        // 2. Send confirmation email
+        try {
+          await emailjs.send("service_b2jlk03", "template_wfpkvcf", {
+            guardian_name: guardianName,
+            user_email: email,
+            user_phone: user_phone,
+            coach: coach,
+            coach_email: coach_email,
+            formatted_date: formattedDate,
+            formatted_time: formattedTime,
+            message: message
+          });
+          emailSent = true;
+          console.log("Email sent successfully");
+        } catch (emailErr) {
+          console.error("Email send error:", emailErr);
+        }
+
+        // Show appropriate message
+        if (bookingSaved && emailSent) {
+          alert("Your lesson has been booked successfully! A confirmation email has been sent.");
+        } else if (bookingSaved) {
+          alert("Your lesson has been booked! However, the confirmation email could not be sent. Please contact FOS Sports Academy to confirm.");
+        } else {
+          alert("Payment was successful, but there was an issue saving your booking. Please contact FOS Sports Academy at 908-645-4602 with your payment confirmation.");
+        }
+
         form.reset();
         window.location.href = "/";
-     }
+      }
     } catch (error) {
       alert("Something went wrong. Please try again.");
       console.error(error);
