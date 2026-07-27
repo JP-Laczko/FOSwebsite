@@ -260,8 +260,44 @@ async function loadCoachesAndSchedules() {
         hour: '2-digit', minute: '2-digit'
       });
 
-      // Now that the coach is avaiable, process the payment
-      const paymentRes = await fetch(`${API_BASE_URL}/api/pay/create-intent`, {        method: "POST",
+      // STEP 1: Save booking to DB FIRST
+      let savedBookingId = null;
+      try {
+        const bookingRes = await fetch(`${API_BASE_URL}/api/bookings`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            coach,
+            guardianName,
+            athleteName: name,
+            numPlayers,
+            date: rawDate.toISOString(),
+            startTime: time,
+            notes: message
+          })
+        });
+
+        if (!bookingRes.ok) {
+          const errText = await bookingRes.text();
+          console.error("Booking save failed:", errText);
+          alert("There was an issue reserving your time slot. Please try again.");
+          return;
+        }
+
+        const savedBooking = await bookingRes.json();
+        savedBookingId = savedBooking._id;
+        console.log("Booking saved successfully:", savedBookingId);
+      } catch (bookingErr) {
+        console.error("Booking save error:", bookingErr);
+        alert("There was an issue reserving your time slot. Please try again.");
+        return;
+      }
+
+      // STEP 2: Process payment
+      const paymentRes = await fetch(`${API_BASE_URL}/api/pay/create-intent`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: totalAmount })
       });
@@ -269,64 +305,37 @@ async function loadCoachesAndSchedules() {
       if (!paymentRes.ok) {
         const text = await paymentRes.text();
         console.error("Payment request failed:", text);
-        alert("Something went wrong processing the payment.");
+        // Delete the booking since payment failed
+        await fetch(`${API_BASE_URL}/api/bookings/${savedBookingId}`, { method: "DELETE" });
+        alert("Something went wrong processing the payment. Please try again.");
         return;
       }
-    
+
       const data = await paymentRes.json();
       const clientSecret = data.clientSecret;
-    
+
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: card,
           billing_details: {
-            name: document.getElementById("name")?.value || "FOS Customer"
+            name: guardianName || "FOS Customer"
           },
         }
       });
-    
+
       if (result.error) {
+        // Payment failed - delete the booking
+        console.error("Payment failed:", result.error.message);
+        await fetch(`${API_BASE_URL}/api/bookings/${savedBookingId}`, { method: "DELETE" });
         document.getElementById("card-errors").textContent = result.error.message;
+        alert("Payment was not successful. Please check your card information and try again.");
         return;
-      } 
+      }
 
       if (result.paymentIntent.status === "succeeded") {
-        // Payment succeeded - now save booking and send email
-        // These should not fail, but if they do, payment already went through
-
-        let bookingSaved = false;
+        // STEP 3: Payment succeeded - send confirmation email
         let emailSent = false;
 
-        // 1. Save booking to DB FIRST (most important)
-        try {
-          const bookingRes = await fetch(`${API_BASE_URL}/api/bookings`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              coach,
-              guardianName,
-              athleteName: name,
-              numPlayers,
-              date: rawDate.toISOString(),
-              startTime: time,
-              notes: message
-            })
-          });
-
-          if (!bookingRes.ok) {
-            const errText = await bookingRes.text();
-            console.error("Booking save failed:", errText);
-          } else {
-            bookingSaved = true;
-            console.log("Booking saved successfully");
-          }
-        } catch (bookingErr) {
-          console.error("Booking save error:", bookingErr);
-        }
-
-        // 2. Send confirmation email
         try {
           await emailjs.send("service_b2jlk03", "template_wfpkvcf", {
             guardian_name: guardianName,
@@ -345,12 +354,10 @@ async function loadCoachesAndSchedules() {
         }
 
         // Show appropriate message
-        if (bookingSaved && emailSent) {
+        if (emailSent) {
           alert("Your lesson has been booked successfully! A confirmation email has been sent.");
-        } else if (bookingSaved) {
-          alert("Your lesson has been booked! However, the confirmation email could not be sent. Please contact FOS Sports Academy to confirm.");
         } else {
-          alert("Payment was successful, but there was an issue saving your booking. Please contact FOS Sports Academy at 908-645-4602 with your payment confirmation.");
+          alert("Your lesson is confirmed and booked in our system! Our email service is temporarily unavailable, but don't worry - your booking is saved. You can contact FOS Sports Academy at 908-645-4602 if you have any questions.");
         }
 
         form.reset();
